@@ -57,14 +57,13 @@ class App extends Component
     {
         let div_style = {
             margin: 0,
-            position: "fixed",
-            height: "100%",
             width: "100%",
+            height: "100%",
         };
         let canvas_style = {
             position: "fixed",
-            height: "100%",
             width: "100%",
+            height: "95%",
             border: 0,
             padding: 0,
             margin: 0
