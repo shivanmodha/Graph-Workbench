@@ -1,0 +1,34 @@
+{
+    "header": "Graph Workbench",
+    "links": {
+        "New": {
+            "type": "link",
+            "side": "left",
+            "eventKey": 1,
+            "href": "#"
+        },
+        "Save": {
+            "type": "link",
+            "side": "left",
+            "eventKey": 2,
+            "href": "#"
+        },
+        "Open": {
+            "type": "link",
+            "side": "left",
+            "eventKey": 3,
+            "href": "#"
+        },
+        "Element": {
+            "type": "dropdown",
+            "side": "left",
+            "eventKey": 4,
+            "id": "dd",
+            "children": {
+                "Action": 4.1,
+                "div1": "divider",
+                "Action2": 4.1
+            }
+        }
+    }
+}
