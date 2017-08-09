@@ -1,34 +1,60 @@
 {
     "header": "Graph Workbench",
     "links": {
-        "New": {
-            "type": "link",
+        "File": {
+            "type": "dropdown",
             "side": "left",
             "eventKey": 1,
-            "href": "#"
+            "id": "nav-file-dropdown",
+            "children": {
+                "New": 1.1,
+                "Open": 1.2,
+                "Save": 1.3,
+                "div1": "divider",
+                "Clear": 1.4,
+                "Revert": 1.5
+            }
         },
-        "Save": {
-            "type": "link",
+        "Export": {
+            "type": "dropdown",
             "side": "left",
             "eventKey": 2,
-            "href": "#"
+            "id": "nav-export-dropdown",
+            "children": {
+                "Path": 2.1,
+                "Objects": 2.2,
+                "div1": "divider",
+                "All": 2.3
+            }
         },
-        "Open": {
-            "type": "link",
+        "View": {
+            "type": "dropdown",
             "side": "left",
             "eventKey": 3,
-            "href": "#"
+            "id": "nav-view-dropdown",
+            "children": {
+                "Zoom In": 3.1,
+                "Zoom Out": 3.2,
+                "div1": "divider",
+                "Reset Camera": 3.3
+            }
         },
         "Element": {
             "type": "dropdown",
-            "side": "left",
+            "side": "right",
             "eventKey": 4,
-            "id": "dd",
+            "id": "nav-element-dropdown",
             "children": {
-                "Action": 4.1,
-                "div1": "divider",
-                "Action2": 4.1
+                "Create": 4.1,
+                "Inspect": 4.2,
+                "Remove": 4.3
             }
+        },
+        "Options": {
+            "type": "link",
+            "side": "right",
+            "eventKey": 5,
+            "href": "#"
         }
     }
 }

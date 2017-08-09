@@ -3,6 +3,8 @@ import logo from './logo.svg';
 import './App.css';
 import { Navbar, Nav, NavItem, NavDropdown, MenuItem } from 'react-bootstrap';
 import { ButtonToolbar, ToggleButtonGroup, ToggleButton } from 'react-bootstrap'
+import { Breadcrumb } from 'react-bootstrap'
+import { Alert } from 'react-bootstrap'
 
 const navigation = require('./configuration/navigation.json');
 
@@ -53,13 +55,41 @@ class App extends Component
     }
     render()
     {
+        let div_style = {
+            margin: 0,
+            position: "fixed",
+            height: "100%",
+            width: "100%",
+        };
+        let canvas_style = {
+            position: "fixed",
+            height: "100%",
+            width: "100%",
+            border: 0,
+            padding: 0,
+            margin: 0
+        };
         return (
-            <Navbar>
-                <Navbar.Header>
-                    <Navbar.Brand> {navigation["header"]} </Navbar.Brand>
-                </Navbar.Header>
-                {this.NavigationCollapse()}
-            </Navbar>
+            <div>
+                <Navbar style={{ marginBottom: "0px" }}>
+                    <Navbar.Header>
+                        <Navbar.Brand> {navigation["header"]} </Navbar.Brand>
+                    </Navbar.Header>
+                    {this.NavigationCollapse()}
+                </Navbar>
+                <Breadcrumb style={{ marginBottom: "0px" }}>
+                    <Breadcrumb.Item active>
+                        bench
+                    </Breadcrumb.Item>
+                    <Breadcrumb.Item href="#">
+                        Untitled Document
+                    </Breadcrumb.Item>
+                </Breadcrumb>
+                <div id="renderer" style={div_style}>
+                    <canvas id="studios.vanish.component.3D" style={canvas_style}></canvas>
+                    <canvas id="studios.vanish.component.2D" style={canvas_style}></canvas>
+                </div>
+            </div>
         );
     }
 }
