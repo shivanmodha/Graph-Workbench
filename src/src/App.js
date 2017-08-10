@@ -1,4 +1,5 @@
 import React, { Component } from 'react';
+import ReactDOM from 'react-dom';
 import logo from './logo.svg';
 import './App.css';
 import { Navbar, Nav, NavItem, NavDropdown, MenuItem } from 'react-bootstrap';
@@ -10,6 +11,23 @@ const navigation = require('./configuration/navigation.json');
 
 class App extends Component
 {
+    constructor(props)
+    {
+        super(props);
+        this._event_onResize = this._event_onResize.bind(this);
+    }
+    componentWillMount()
+    {
+        this.setState({
+            NavigationHeight: 0,
+            BreadHeight: 0
+        });        
+    }
+    componentDidMount()
+    {
+        window.addEventListener("resize", this._event_onResize);
+        this._event_onResize();
+    }
     CreateDropdown(element, title)
     {
         let links = [];
@@ -53,6 +71,30 @@ class App extends Component
             </Navbar.Collapse>
         );
     }
+    _event_onResize(e)
+    {
+        this.setState({
+            NavigationHeight: ReactDOM.findDOMNode(this.NavigationBar).offsetHeight,
+            BreadHeight: ReactDOM.findDOMNode(this.BreadBar).offsetHeight
+        });
+    }
+    updateSize()
+    {
+        this._event_onResize();
+        return null;
+    }
+    GetStyle()
+    {
+        return {
+            position: "fixed",
+            top: this.state.NavigationHeight + this.state.BreadHeight,
+            width: "100%",
+            height: window.innerHeight - this.state.NavigationHeight - this.state.BreadHeight,
+            border: 0,
+            padding: 0,
+            margin: 0
+        };
+    }
     render()
     {
         let div_style = {
@@ -70,13 +112,13 @@ class App extends Component
         };
         return (
             <div>
-                <Navbar style={{ marginBottom: "0px" }}>
+                <Navbar style={{ position: "fixed", top: 0 }} ref={(e) => this.NavigationBar = e} fixedTop>
                     <Navbar.Header>
                         <Navbar.Brand> {navigation["header"]} </Navbar.Brand>
                     </Navbar.Header>
                     {this.NavigationCollapse()}
                 </Navbar>
-                <Breadcrumb style={{ marginBottom: "0px" }}>
+                <Breadcrumb style={{paddingTop: this.state.NavigationHeight + 5 }} ref={(e) => this.BreadBar = e}>
                     <Breadcrumb.Item active>
                         bench
                     </Breadcrumb.Item>
@@ -84,9 +126,9 @@ class App extends Component
                         Untitled Document
                     </Breadcrumb.Item>
                 </Breadcrumb>
-                <div id="renderer" style={div_style}>
-                    <canvas id="studios.vanish.component.3D" style={canvas_style}></canvas>
-                    <canvas id="studios.vanish.component.2D" style={canvas_style}></canvas>
+                <div id="renderer" style={this.GetStyle()}>
+                    <canvas id="studios.vanish.component.3D" style={this.GetStyle()}></canvas>
+                    <canvas id="studios.vanish.component.2D" style={this.GetStyle()}></canvas>
                 </div>
             </div>
         );

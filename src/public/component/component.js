@@ -3,6 +3,8 @@ let obj;
 let url_base
 let clrcol = [0.875, 0.875, 0.875, 1];
 let param = [];
+let MousePosition = new Point(0, 0);
+let offsetY = 0;
 function Main()
 {
     url = ParseURL();
@@ -17,6 +19,9 @@ function Main()
     RC2.addEventListener("touchmove", Event_TMove);
     RC2.addEventListener("mousewheel", Event_Wheel);
     RC2.addEventListener("DOMMouseScroll", Event_Wheel);
+    offsetY = RC2.style.top;
+    offsetY = offsetY.substring(0, offsetY.length - 2);
+    offsetY = parseInt(offsetY);
     ME = new Engine(RC2, RC3);
     ME.Camera.Location = tmp_location;
     ME.Camera.Rotation = tmp_rotation;
@@ -110,7 +115,7 @@ function Event_Up(event)
 }
 function Event_Move(event)
 {
-
+    MousePosition = new Point(event.clientX, event.clientY - offsetY);
 }
 function Event_TMove(event)
 {
@@ -133,14 +138,14 @@ function Update()
 function Render()
 {
     ME.Clear(clrcol[0], clrcol[1], clrcol[2], clrcol[3]);
-    ME.Device2D.lineWidth = 0.5;
+    ME.Device2D.lineWidth = 0.15;
     ME.Device2D.beginPath();
-    ME.Device2D.moveTo(ME.Device.viewportWidth / 2, 0);
-    ME.Device2D.lineTo(ME.Device.viewportWidth / 2, ME.Device.viewportHeight);
+    ME.Device2D.moveTo(MousePosition.X, 0);
+    ME.Device2D.lineTo(MousePosition.X, ME.Device.viewportHeight);
     ME.Device2D.stroke();
     ME.Device2D.beginPath();
-    ME.Device2D.moveTo(0, ME.Device.viewportHeight / 2);
-    ME.Device2D.lineTo(ME.Device.viewportWidth, ME.Device.viewportHeight / 2);
+    ME.Device2D.moveTo(0, MousePosition.Y);
+    ME.Device2D.lineTo(ME.Device.viewportWidth, MousePosition.Y);
     ME.Device2D.stroke();
     obj.Render(ME);
 }
