@@ -1,10 +1,10 @@
 let ME;
-let obj;
 let url_base
 let clrcol = [0.875, 0.875, 0.875, 1];
 let param = [];
 let MousePosition = new Point(0, 0);
 let offsetY = 0;
+let Elements = [];
 function Main()
 {
     url = ParseURL();
@@ -123,7 +123,11 @@ function Event_TMove(event)
 }
 function Event_Wheel(event)
 {
-
+    let e = window.event || event;
+    let speed = 0.1;
+    let delta = Math.max(-speed, Math.min(speed, (e.wheelDelta || -e.detail)));
+    ME.Camera.Location.Z -= (delta);
+    UpdateURL();
 }
 function MainLoop()
 {
@@ -147,5 +151,4 @@ function Render()
     ME.Device2D.moveTo(0, MousePosition.Y);
     ME.Device2D.lineTo(ME.Device.viewportWidth, MousePosition.Y);
     ME.Device2D.stroke();
-    obj.Render(ME);
 }
