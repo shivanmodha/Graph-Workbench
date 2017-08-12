@@ -80,7 +80,7 @@ class App extends Component
     }
     _event_onNavigationSelect(eventKey)
     {
-        window.dispatchEvent(new CustomEvent("_event_navigation_select_", { detail: { Event: eventKey } }));
+        window.dispatchEvent(new CustomEvent("_event_navigation_select_", { detail: { key: eventKey } }));
     }
     updateSize()
     {

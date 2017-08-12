@@ -4,22 +4,23 @@ let clrcol = [0.875, 0.875, 0.875, 1];
 let param = [];
 let MousePosition = new Point(0, 0);
 let offsetY = 0;
-let Elements = [];
+let nodes = [];
+let paths = [];
 function Main()
 {
     url = ParseURL();
     let RC3 = document.getElementById("studios.vanish.component.3D");
     let RC2 = document.getElementById("studios.vanish.component.2D");
-    window.addEventListener("_event_navigation_select_", Event_Select);
-    RC2.addEventListener("mousedown", Event_Down);
-    RC2.addEventListener("touchstart", Event_TDown);
-    RC2.addEventListener("mouseup", Event_Up);
-    RC2.addEventListener("touchend", Event_Up);
-    RC2.addEventListener("mousemove", Event_Move);
-    RC2.addEventListener("mouseover", Event_Move);
-    RC2.addEventListener("touchmove", Event_TMove);
-    RC2.addEventListener("mousewheel", Event_Wheel);
-    RC2.addEventListener("DOMMouseScroll", Event_Wheel);
+    window.addEventListener("_event_navigation_select_", _event_onNavigationSelect);
+    RC2.addEventListener("mousedown", _event_onMouseDown);
+    RC2.addEventListener("touchstart", _event_onTouchDown);
+    RC2.addEventListener("mouseup", _event_onMouseUp);
+    RC2.addEventListener("touchend", _event_onTouchUp);
+    RC2.addEventListener("mousemove", _event_onMouseMove);
+    RC2.addEventListener("mouseover", _event_onMouseMove);
+    RC2.addEventListener("touchmove", _event_onTouchMove);
+    RC2.addEventListener("mousewheel", _event_onMouseWheel);
+    RC2.addEventListener("DOMMouseScroll", _event_onMouseWheel);
     offsetY = RC2.style.top;
     offsetY = offsetY.substring(0, offsetY.length - 2);
     offsetY = parseInt(offsetY);
@@ -59,14 +60,14 @@ function ParseURL()
         }
         else
         {
-            tmp_location = new Vertex(0, 0, 100);
+            tmp_location = new Vertex(0, 0, 5);
             tmp_rotation = new Vertex(0, 0, 0);
             RenderedFloor = 0;
         }
     }
     else
     {
-        tmp_location = new Vertex(0, 0, 100);
+        tmp_location = new Vertex(0, 0, 5);
         tmp_rotation = new Vertex(0, 0, 0);
         RenderedFloor = 0;
     }
@@ -101,32 +102,52 @@ function Initialize()
         new Index(4, 6, 7)
     ]
     obj = new Object3D(ME, Vertices, Indices, "OBJ");
+
+    let n1 = new Node(1, 0, 0);
+    let n2 = new Node(-1, 0, 0);
+    let p = new Path(n1, n2, 5);
+    
+    nodes.push(n1);
+    nodes.push(n2);
+    paths.push(p);
 }
-function Event_Select(event)
+function Element_New()
 {
-    console.log(event.detail.Event);
+    
 }
-function Event_Down(event)
+function _event_onNavigationSelect(event)
+{
+    let navigation = event.detail.key;
+    if (navigation === "_navigation_element_create")
+    {
+        Element_New();
+    }
+}
+function _event_onMouseDown(event)
 {
 
 }
-function Event_TDown(event)
+function _event_onTouchDown(event)
 {
 
 }
-function Event_Up(event)
+function _event_onMouseUp(event)
 {
 
 }
-function Event_Move(event)
+function _event_onTouchUp(event)
+{
+
+}
+function _event_onMouseMove(event)
 {
     MousePosition = new Point(event.clientX, event.clientY - offsetY);
 }
-function Event_TMove(event)
+function _event_onTouchMove(event)
 {
 
 }
-function Event_Wheel(event)
+function _event_onMouseWheel(event)
 {
     let e = window.event || event;
     let speed = 0.1;
@@ -156,4 +177,16 @@ function Render()
     ME.Device2D.moveTo(0, MousePosition.Y);
     ME.Device2D.lineTo(ME.Device.viewportWidth, MousePosition.Y);
     ME.Device2D.stroke();
+    ME.Device2D.lineWidth = 1;
+    for (let i = 0; i < paths.length; i++)
+    {
+        paths[i].Render(ME, 0);
+    }
+    for (let i = 0; i < nodes.length; i++)
+    {
+        if (!nodes[i].bounded)
+        {
+            nodes[i].Render(ME, 0);
+        }    
+    }
 }
