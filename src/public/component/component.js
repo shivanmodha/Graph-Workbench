@@ -10,6 +10,7 @@ function Main()
     url = ParseURL();
     let RC3 = document.getElementById("studios.vanish.component.3D");
     let RC2 = document.getElementById("studios.vanish.component.2D");
+    window.addEventListener("_event_navigation_select_", Event_Select);
     RC2.addEventListener("mousedown", Event_Down);
     RC2.addEventListener("touchstart", Event_TDown);
     RC2.addEventListener("mouseup", Event_Up);
@@ -67,7 +68,7 @@ function ParseURL()
     {
         tmp_location = new Vertex(0, 0, 100);
         tmp_rotation = new Vertex(0, 0, 0);
-        RenderedFloor = 0;        
+        RenderedFloor = 0;
     }
     let url_search = new URL(url);
     url = url.substring(url.indexOf("/") + 1);
@@ -86,7 +87,7 @@ function Initialize()
         new GraphicsVertex(+1.0, +1.0, +1.0, +1.0, +1.0, +1.0, +1.0),
         new GraphicsVertex(+1.0, -1.0, +1.0, +1.0, +1.0, +1.0, +1.0),
         new GraphicsVertex(-1.0, -1.0, +1.0, +1.0, +1.0, +1.0, +1.0),
-        
+
         new GraphicsVertex(-1.0, +1.0, -1.0, +1.0, +1.0, +1.0, +1.0),
         new GraphicsVertex(+1.0, +1.0, -1.0, +1.0, +1.0, +1.0, +1.0),
         new GraphicsVertex(+1.0, -1.0, -1.0, +1.0, +1.0, +1.0, +1.0),
@@ -95,11 +96,15 @@ function Initialize()
     let Indices = [
         new Index(0, 1, 2),
         new Index(0, 2, 3),
-        
+
         new Index(4, 5, 6),
         new Index(4, 6, 7)
     ]
     obj = new Object3D(ME, Vertices, Indices, "OBJ");
+}
+function Event_Select(event)
+{
+    console.log(event.detail.Event);
 }
 function Event_Down(event)
 {

@@ -4,56 +4,56 @@
         "File": {
             "type": "dropdown",
             "side": "left",
-            "eventKey": 1,
+            "eventKey": "_navigation_file",
             "id": "nav-file-dropdown",
             "children": {
-                "New": 1.1,
-                "Open": 1.2,
-                "Save": 1.3,
+                "New": "_navigation_file_new",
+                "Open": "_navigation_file_open",
+                "Save": "_navigation_file_save",
                 "div1": "divider",
-                "Clear": 1.4,
-                "Revert": 1.5
+                "Clear": "_navigation_file_clear",
+                "Revert": "_navigation_file_revert"
             }
         },
         "Export": {
             "type": "dropdown",
             "side": "left",
-            "eventKey": 2,
+            "eventKey": "_navigation_export",
             "id": "nav-export-dropdown",
             "children": {
-                "Path": 2.1,
-                "Objects": 2.2,
+                "Path": "_navigation_export_path",
+                "Objects": "_navigation_export_objects",
                 "div1": "divider",
-                "All": 2.3
+                "All": "_navigation_export_all"
             }
         },
         "View": {
             "type": "dropdown",
             "side": "left",
-            "eventKey": 3,
+            "eventKey": "_navigation_view",
             "id": "nav-view-dropdown",
             "children": {
-                "Zoom In": 3.1,
-                "Zoom Out": 3.2,
+                "Zoom In": "_navigation_view_zoomin",
+                "Zoom Out": "_navigation_view_zoomout",
                 "div1": "divider",
-                "Reset Camera": 3.3
+                "Reset Camera": "_navigation_view_resetcamera"
             }
         },
         "Element": {
             "type": "dropdown",
             "side": "right",
-            "eventKey": 4,
+            "eventKey": "_navigation_element",
             "id": "nav-element-dropdown",
             "children": {
-                "Create": 4.1,
-                "Inspect": 4.2,
-                "Remove": 4.3
+                "Create": "_navigation_element_create",
+                "Inspect": "_navigation_element_inspect",
+                "Remove": "_navigation_element_remove"
             }
         },
         "Options": {
             "type": "link",
             "side": "right",
-            "eventKey": 5,
+            "eventKey": "_navigation_options",
             "href": "#"
         }
     }

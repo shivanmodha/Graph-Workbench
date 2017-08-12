@@ -66,8 +66,8 @@ class App extends Component
         });
         return (
             <Navbar.Collapse>
-                <Nav pullLeft> {links["left"]} </Nav>
-                <Nav pullRight> {links["right"]} </Nav>
+                <Nav pullLeft onSelect={this._event_onNavigationSelect}> {links["left"]} </Nav>
+                <Nav pullRight onSelect={this._event_onNavigationSelect}> {links["right"]} </Nav>
             </Navbar.Collapse>
         );
     }
@@ -77,6 +77,10 @@ class App extends Component
             NavigationHeight: ReactDOM.findDOMNode(this.NavigationBar).offsetHeight,
             BreadHeight: ReactDOM.findDOMNode(this.BreadBar).offsetHeight
         });
+    }
+    _event_onNavigationSelect(eventKey)
+    {
+        window.dispatchEvent(new CustomEvent("_event_navigation_select_", { detail: { Event: eventKey } }));
     }
     updateSize()
     {
