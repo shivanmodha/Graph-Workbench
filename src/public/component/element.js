@@ -1,72 +1,181 @@
+let Graph = class Graph
+{
+    constructor()
+    {
+        this.Nodes = [];
+    }
+    CreateNode(_location)
+    {
+        this.Nodes.push(new Node(_location));
+        return this.Nodes.length - 1;
+    }
+    RegisterNode(_node)
+    {
+        this.Nodes.push(_node);
+    }
+    NodeInList(check, list)
+    {
+        for (let i = 0; i < list.length; i++)
+        {
+            if (check == list[i])
+            {
+                return true;
+            }
+        }
+        return false;
+    }
+    GetPath(start, end)
+    {
+        let nodePool = [];
+        nodePool.push(start);
+        for (let i = 0; i < this.Nodes.length; i++)
+        {
+            this.Nodes[i]._distance = Number.MAX_SAFE_INTEGER;
+            this.Nodes[i]._previous = null;
+            if (this.Nodes[i] != start)
+            {
+                nodePool.push(this.Nodes[i]);
+            }
+        }
+        start._distance = 0;
+        while (nodePool.length > 0)
+        {
+            let min = Number.MAX_SAFE_INTEGER;
+            let index = -1;
+            for (let i = 0; i < nodePool.length; i++)
+            {
+                if (nodePool[i]._distance <= min)
+                {
+                    min = nodePool[i]._distance;
+                    index = i;
+                }
+            }
+            let n = nodePool.splice(index, 1)[0];
+            for (let i = 0; i < n.Neighbors.length; i++)
+            {
+                let ne = n.Neighbors[i];
+                if (this.NodeInList(ne.EndNode, nodePool) && (n.Enabled || n == start))
+                {
+                    let distance = n._distance + ne.Distance;
+                    if (distance < ne.EndNode._distance)
+                    {
+                        ne.EndNode._distance = distance;
+                        ne.EndNode._previous = n;
+                    }
+                }
+            }
+        }
+        this.SelectedPath = [];
+        let n = end;
+        while (n != start)
+        {
+            this.SelectedPath.unshift(n);
+            n = n._previous;
+        }
+        this.SelectedPath.unshift(n);
+        for (let i = 0; i < this.SelectedPath.length; i++)
+        {
+            console.log(this.SelectedPath[i].Name);
+        }
+    }
+    Render(ME, z_rotation)
+    {
+        for (let i = 0; i < this.Nodes.length; i++)
+        {
+            let p = ME.ProjectVertex(this.Nodes[i].Location, z_rotation);
+            let selected = false;
+            for (let j = 0; j < this.SelectedPath.length; j++)
+            {
+                if (this.SelectedPath[j] == this.Nodes[i])
+                {
+                    selected = true;
+                }
+            }
+            for (let j = 0; j < this.Nodes[i].Neighbors.length; j++)
+            {
+                ME.Device2D.beginPath();
+                ME.Device2D.moveTo(p.X, p.Y);
+                let p1 = ME.ProjectVertex(this.Nodes[i].Neighbors[j].EndNode.Location, z_rotation);
+                ME.Device2D.lineTo(p1.X, p1.Y);
+                if (selected && this.NodeInList(this.Nodes[i].Neighbors[j].EndNode, this.SelectedPath))
+                {
+                    ME.Device2D.strokeStyle = '#4682B4';
+                }    
+                ME.Device2D.stroke();
+                ME.Device2D.strokeStyle = '#000000';
+            }
+        }
+        for (let i = 0; i < this.Nodes.length; i++)
+        {
+            ME.Device2D.beginPath();
+            let p = ME.ProjectVertex(this.Nodes[i].Location, z_rotation);
+            ME.Device2D.arc(p.X, p.Y, 2, 0, Math.PI * 2, true);
+            let selected = false;
+            for (let j = 0; j < this.SelectedPath.length; j++)
+            {
+                if (this.SelectedPath[j] == this.Nodes[i])
+                {
+                    selected = true;
+                    if (j == 0)
+                    {
+                        ME.Device2D.fillStyle = '#9ACD32';      
+                    }
+                    else if (j == this.SelectedPath.length - 1)
+                    {
+                        ME.Device2D.fillStyle = '#B22222';                              
+                    }
+                    else
+                    {
+                        ME.Device2D.fillStyle = '#4682B4';                        
+                    }
+                }
+            }
+            ME.Device2D.fill();
+            ME.Device2D.font = "15px Calibri";
+            ME.Device2D.textAlign="center"; 
+            ME.Device2D.fillText("'" + this.Nodes[i].Name + "' = (" + this.Nodes[i].Location.X + ", " + this.Nodes[i].Location.Y + ", " + this.Nodes[i].Location.Z + ")", p.X, p.Y + 3.5);
+            ME.Device2D.fillStyle = '#000000';
+        }
+    }
+}
 let Node = class Node
 {
-    constructor(_x, _y, _z)
+    constructor(_name, _location)
     {
-        this.x = _x;
-        this.y = _y;
-        this.z = _z;
-        this.element = null;
-        this.bounded = null;
+        this.Name = _name;
+        this.Location = _location;
+        this.Neighbors = [];
+        this._previous = null;
+        this._distance = Number.MAX_SAFE_INTEGER;
+        this.Enabled = true;
     }
-    Render(ME, z_rotation)
+    CreatePathTo(_node, _reversible)
     {
-        if (this.element)
+        let distance = Math.sqrt(Math.pow(this.Location.X - _node.Location.X, 2) + Math.pow(this.Location.Y - _node.Location.Y, 2) + Math.pow(this.Location.Z - _node.Location.Z, 2));
+        let neighbor = new Neighbor(_node, distance);
+        this.Neighbors.push(neighbor);
+        if (_reversible == true)
         {
-            this.element.Render(ME);
-        }
-        else
-        {
-            let p = ME.ProjectVertex(new Vertex(this.x, this.y, this.z), z_rotation);
-            ME.Device2D.beginPath();
-            ME.Device2D.arc(p.X, p.Y, 5, 0, Math.PI * 2, true);
-            ME.Device2D.fill();
+            _node.CreatePathTo(this, false);
         }
     }
 }
-let Path = class Path
+let Neighbor = class Neighbor
 {
-    constructor(_node1, _node2, _distance)
+    constructor(_endNode, _distance)
     {
-        this.node1 = _node1;
-        this.node2 = _node2;
-        this.distance = _distance;
-        this.element = null;
-
-        this.node1.bounded = this;
-        this.node2.bounded = this;
-    }
-    BindObject(_element)
-    {
-        this.element = _element;
-    }
-    Render(ME, z_rotation)
-    {
-        if (this.element)
-        {
-            this.element.Render(ME);
-        }
-        else
-        {            
-            let p1 = ME.ProjectVertex(new Vertex(this.node1.x, this.node1.y, this.node1.z), z_rotation);
-            let p2 = ME.ProjectVertex(new Vertex(this.node2.x, this.node2.y, this.node2.z), z_rotation);
-            ME.Device2D.beginPath();
-            ME.Device2D.moveTo(p1.X, p1.Y);
-            ME.Device2D.lineTo(p2.X, p2.Y);
-            ME.Device2D.stroke();
-        }    
-        this.node1.Render(ME, z_rotation);
-        this.node2.Render(ME, z_rotation);
+        this.EndNode = _endNode;
+        this.Distance = _distance;
     }
 }
-let Element = class Element
+let element = class Element
 {
-    constructor(_name, _object)
+    constructor(_object)
     {
-        this.name = _name;
-        this.object = _object;
+        this.Object = _object;
     }
-    Render(ME)
+    BindToNode(_node)
     {
-        this.object.Render(ME);
+        this.Node = _node;
     }
 }

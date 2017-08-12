@@ -4,8 +4,8 @@ let clrcol = [0.875, 0.875, 0.875, 1];
 let param = [];
 let MousePosition = new Point(0, 0);
 let offsetY = 0;
-let nodes = [];
-let paths = [];
+
+let g;
 function Main()
 {
     url = ParseURL();
@@ -103,13 +103,24 @@ function Initialize()
     ]
     obj = new Object3D(ME, Vertices, Indices, "OBJ");
 
-    let n1 = new Node(1, 0, 0);
-    let n2 = new Node(-1, 0, 0);
-    let p = new Path(n1, n2, 5);
+    g = new Graph();
+    let A = new Node("A", new Vertex(0, 3, 0));
+    let B = new Node("B", new Vertex(3, 0, 0));
+    let C = new Node("C", new Vertex(-3, 0, 0));
+    let D = new Node("D", new Vertex(0, -3, 0));
+
+    A.CreatePathTo(B, true);
+    A.CreatePathTo(C, true);
+    B.CreatePathTo(C, true);
+    B.CreatePathTo(D, true);
+    C.CreatePathTo(D, true);
+
+    g.RegisterNode(A);
+    g.RegisterNode(B);
+    g.RegisterNode(C);
+    g.RegisterNode(D);
     
-    nodes.push(n1);
-    nodes.push(n2);
-    paths.push(p);
+    g.GetPath(A, D);
 }
 function Element_New()
 {
@@ -177,16 +188,6 @@ function Render()
     ME.Device2D.moveTo(0, MousePosition.Y);
     ME.Device2D.lineTo(ME.Device.viewportWidth, MousePosition.Y);
     ME.Device2D.stroke();
-    ME.Device2D.lineWidth = 1;
-    for (let i = 0; i < paths.length; i++)
-    {
-        paths[i].Render(ME, 0);
-    }
-    for (let i = 0; i < nodes.length; i++)
-    {
-        if (!nodes[i].bounded)
-        {
-            nodes[i].Render(ME, 0);
-        }    
-    }
+    ME.Device2D.lineWidth = 0.3;
+    g.Render(ME, 0);
 }
