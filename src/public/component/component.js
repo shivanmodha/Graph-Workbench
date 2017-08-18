@@ -2,15 +2,18 @@ let ME;
 let url_base
 let clrcol = [0.875, 0.875, 0.875, 1];
 let param = [];
+let PreviousMousePosition = new Point(0, 0);
 let MousePosition = new Point(0, 0);
+let MouseButton = 0;
 let offsetY = 0;
-
+let RC3;
+let RC2;
 let g;
 function Main()
 {
     url = ParseURL();
-    let RC3 = document.getElementById("studios.vanish.component.3D");
-    let RC2 = document.getElementById("studios.vanish.component.2D");
+    RC3 = document.getElementById("studios.vanish.component.3D");
+    RC2 = document.getElementById("studios.vanish.component.2D");
     window.addEventListener("_event_navigation_select_", _event_onNavigationSelect);
     RC2.addEventListener("mousedown", _event_onMouseDown);
     RC2.addEventListener("touchstart", _event_onTouchDown);
@@ -103,23 +106,26 @@ function Initialize()
     ]
     obj = new Object3D(ME, Vertices, Indices, "OBJ");
 
+    let el = new Element(obj);
+    
     g = new Graph();
     let A = new Node("A", new Vertex(0, 3, 0));
     let B = new Node("B", new Vertex(3, 0, 0));
     let C = new Node("C", new Vertex(-3, 0, 0));
     let D = new Node("D", new Vertex(0, -3, 0));
-
+    let E = new Node("E", new Vertex(0, 0, 0));
     A.CreatePathTo(B, true);
     A.CreatePathTo(C, true);
     B.CreatePathTo(C, true);
     B.CreatePathTo(D, true);
     C.CreatePathTo(D, true);
-
+    B.Selected = true;
     g.RegisterNode(A);
     g.RegisterNode(B);
     g.RegisterNode(C);
     g.RegisterNode(D);
-    
+    g.RegisterNode(E);
+    g.RegisterElement(el);
     g.GetPath(A, D);
 }
 function Element_New()
@@ -136,7 +142,9 @@ function _event_onNavigationSelect(event)
 }
 function _event_onMouseDown(event)
 {
-
+    MouseButton = 1;
+    PreviousMousePosition = new Point(event.clientX, event.clientY - offsetY);
+    RC2.style.cursor = "move";
 }
 function _event_onTouchDown(event)
 {
@@ -144,7 +152,9 @@ function _event_onTouchDown(event)
 }
 function _event_onMouseUp(event)
 {
-
+    MouseButton = 0;
+    UpdateURL();
+    RC2.style.cursor = "Default";
 }
 function _event_onTouchUp(event)
 {
@@ -175,10 +185,20 @@ function MainLoop()
 function Update()
 {
     obj.Rotation.X += 1;
+    if (MouseButton == 1)
+    {
+        DeltaMouse = new Point(PreviousMousePosition.X - MousePosition.X, PreviousMousePosition.Y - MousePosition.Y);
+        PreviousMousePosition = new Point(MousePosition.X, MousePosition.Y);
+        ME.Camera.Location.X += DeltaMouse.X / (1236.984 * Math.pow(ME.Camera.Location.Z, -0.9845149));
+        ME.Camera.Location.Y -= DeltaMouse.Y / (1236.984 * Math.pow(ME.Camera.Location.Z, -0.9845149));
+    }
 }
 function Render()
 {
     ME.Clear(clrcol[0], clrcol[1], clrcol[2], clrcol[3]);
+    let scale = parseInt((Math.pow(1.0293, -ME.Camera.Location.Z + 135) + 5));
+    scale = 15;
+    ME.Device2D.font = scale.toString() + "px Calibri";
     ME.Device2D.lineWidth = 0.15;
     ME.Device2D.beginPath();
     ME.Device2D.moveTo(MousePosition.X, 0);

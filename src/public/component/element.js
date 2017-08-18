@@ -3,6 +3,7 @@ let Graph = class Graph
     constructor()
     {
         this.Nodes = [];
+        this.Elements = [];
     }
     CreateNode(_location)
     {
@@ -12,6 +13,10 @@ let Graph = class Graph
     RegisterNode(_node)
     {
         this.Nodes.push(_node);
+    }
+    RegisterElement(_element)
+    {
+        this.Elements.push(_element);
     }
     NodeInList(check, list)
     {
@@ -73,13 +78,13 @@ let Graph = class Graph
             n = n._previous;
         }
         this.SelectedPath.unshift(n);
-        for (let i = 0; i < this.SelectedPath.length; i++)
-        {
-            console.log(this.SelectedPath[i].Name);
-        }
     }
     Render(ME, z_rotation)
     {
+        for (let i = 0; i < this.Elements.length; i++)
+        {
+            this.Elements[i].Render(ME);
+        }
         for (let i = 0; i < this.Nodes.length; i++)
         {
             let p = ME.ProjectVertex(this.Nodes[i].Location, z_rotation);
@@ -100,7 +105,7 @@ let Graph = class Graph
                 if (selected && this.NodeInList(this.Nodes[i].Neighbors[j].EndNode, this.SelectedPath))
                 {
                     ME.Device2D.strokeStyle = '#4682B4';
-                }    
+                }
                 ME.Device2D.stroke();
                 ME.Device2D.strokeStyle = '#000000';
             }
@@ -109,8 +114,9 @@ let Graph = class Graph
         {
             ME.Device2D.beginPath();
             let p = ME.ProjectVertex(this.Nodes[i].Location, z_rotation);
-            ME.Device2D.arc(p.X, p.Y, 2, 0, Math.PI * 2, true);
+            ME.Device2D.arc(p.X, p.Y, 5, 0, Math.PI * 2, true);
             let selected = false;
+            let style = "#000000";
             for (let j = 0; j < this.SelectedPath.length; j++)
             {
                 if (this.SelectedPath[j] == this.Nodes[i])
@@ -118,23 +124,37 @@ let Graph = class Graph
                     selected = true;
                     if (j == 0)
                     {
-                        ME.Device2D.fillStyle = '#9ACD32';      
+                        style = '#9ACD32';
                     }
                     else if (j == this.SelectedPath.length - 1)
                     {
-                        ME.Device2D.fillStyle = '#B22222';                              
+                        style = '#B22222';
                     }
                     else
                     {
-                        ME.Device2D.fillStyle = '#4682B4';                        
+                        style = '#4682B4';
                     }
+                    break;
                 }
             }
-            ME.Device2D.fill();
-            ME.Device2D.font = "15px Calibri";
-            ME.Device2D.textAlign="center"; 
+            if (this.Nodes[i].Selected == true)
+            {
+                style = '#FFA500';
+            }
+            if (this.Nodes[i].Selected == true || selected)
+            {
+                ME.Device2D.fillStyle = style;
+                ME.Device2D.fill();
+            }
+            else
+            {
+                ME.Device2D.strokeStyle = style;
+                ME.Device2D.stroke();
+            }    
+            ME.Device2D.textAlign="center";
             ME.Device2D.fillText("'" + this.Nodes[i].Name + "' = (" + this.Nodes[i].Location.X + ", " + this.Nodes[i].Location.Y + ", " + this.Nodes[i].Location.Z + ")", p.X, p.Y + 3.5);
             ME.Device2D.fillStyle = '#000000';
+            ME.Device2D.strokeStyle = '#000000';
         }
     }
 }
@@ -148,6 +168,7 @@ let Node = class Node
         this._previous = null;
         this._distance = Number.MAX_SAFE_INTEGER;
         this.Enabled = true;
+        this.Selected = false;
     }
     CreatePathTo(_node, _reversible)
     {
@@ -168,7 +189,7 @@ let Neighbor = class Neighbor
         this.Distance = _distance;
     }
 }
-let element = class Element
+let Element = class Element
 {
     constructor(_object)
     {
@@ -177,5 +198,9 @@ let element = class Element
     BindToNode(_node)
     {
         this.Node = _node;
+    }
+    Render(ME)
+    {
+        this.Object.Render(ME);
     }
 }
