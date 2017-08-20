@@ -9,6 +9,8 @@ let offsetY = 0;
 let RC3;
 let RC2;
 let g;
+
+let graph;
 function Main()
 {
     url = ParseURL();
@@ -108,6 +110,8 @@ function Initialize()
 
     let el = new Element(obj);
     
+    graph = new Graph();
+
     g = new Graph();
     let A = new Node("A", new Vertex(0, 3, 0));
     let B = new Node("B", new Vertex(3, 0, 0));
@@ -119,25 +123,45 @@ function Initialize()
     B.CreatePathTo(C, true);
     B.CreatePathTo(D, true);
     C.CreatePathTo(D, true);
-    B.Selected = true;
+    //B.Selected = true;
     g.RegisterNode(A);
     g.RegisterNode(B);
     g.RegisterNode(C);
     g.RegisterNode(D);
     g.RegisterNode(E);
     g.RegisterElement(el);
-    g.GetPath(A, D);
+    //g.GetPath(A, D);
 }
-function Element_New()
+function _event_onNodeSelect(event)
 {
-    
+    console.log(event);
 }
 function _event_onNavigationSelect(event)
 {
     let navigation = event.detail.key;
     if (navigation === "_navigation_element_create")
     {
-        Element_New();
+
+    }
+    else if (navigation === "_navigation_node_create")
+    {
+        let N = new Node("New Node", new Vertex(0, 0, 0));
+        graph.RegisterNode(N);
+    }
+    else if (navigation === "_navigation_view_zoomin")
+    {
+        ME.Camera.Location.Z -= 1;
+        UpdateURL();
+    }
+    else if (navigation === "_navigation_view_zoomout")
+    {
+        ME.Camera.Location.Z += 1;
+        UpdateURL();        
+    }
+    else if (navigation === "_navigation_view_resetcamera")
+    {
+        ME.Camera.Location = new Vertex(0, 0, 5);
+        UpdateURL();            
     }
 }
 function _event_onMouseDown(event)
@@ -155,6 +179,18 @@ function _event_onMouseUp(event)
     MouseButton = 0;
     UpdateURL();
     RC2.style.cursor = "Default";
+    for (let i = 0; i < graph.Nodes.length; i++)
+    {
+        let child = graph.Nodes[i];
+        if (child.Hovered)
+        {
+            _event_onNodeSelect(child);
+        }
+        else
+        {
+
+        }
+    }
 }
 function _event_onTouchUp(event)
 {
@@ -163,6 +199,18 @@ function _event_onTouchUp(event)
 function _event_onMouseMove(event)
 {
     MousePosition = new Point(event.clientX, event.clientY - offsetY);
+    for (let i = 0; i < graph.Nodes.length; i++)
+    {
+        let child = graph.Nodes[i];
+        if (child.ProjectedLocation.DistanceTo(new Vertex(MousePosition.X, MousePosition.Y, 0)) < 10)
+        {
+            graph.Nodes[i].Hovered = true;            
+        }
+        else
+        {
+            graph.Nodes[i].Hovered = false;
+        }
+    }
 }
 function _event_onTouchMove(event)
 {
@@ -209,5 +257,6 @@ function Render()
     ME.Device2D.lineTo(ME.Device.viewportWidth, MousePosition.Y);
     ME.Device2D.stroke();
     ME.Device2D.lineWidth = 0.3;
-    g.Render(ME, 0);
+    graph.Render(ME, 0);
+    //g.Render(ME, 0);
 }

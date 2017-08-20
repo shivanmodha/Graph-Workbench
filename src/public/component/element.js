@@ -10,6 +10,17 @@ let Graph = class Graph
         this.Nodes.push(new Node(_location));
         return this.Nodes.length - 1;
     }
+    GetNode(_name)
+    {
+        for (let i = 0; i < this.Nodes.length; i++)
+        {
+            if (this.Nodes[i].Name === _name)
+            {
+                return this.Nodes[i];
+            }
+        }
+        return null;
+    }
     RegisterNode(_node)
     {
         this.Nodes.push(_node);
@@ -89,13 +100,16 @@ let Graph = class Graph
         {
             let p = ME.ProjectVertex(this.Nodes[i].Location, z_rotation);
             let selected = false;
-            for (let j = 0; j < this.SelectedPath.length; j++)
+            if (this.SelectedPath)
             {
-                if (this.SelectedPath[j] == this.Nodes[i])
+                for (let j = 0; j < this.SelectedPath.length; j++)
                 {
-                    selected = true;
+                    if (this.SelectedPath[j] == this.Nodes[i])
+                    {
+                        selected = true;
+                    }
                 }
-            }
+            }    
             for (let j = 0; j < this.Nodes[i].Neighbors.length; j++)
             {
                 ME.Device2D.beginPath();
@@ -114,34 +128,45 @@ let Graph = class Graph
         {
             ME.Device2D.beginPath();
             let p = ME.ProjectVertex(this.Nodes[i].Location, z_rotation);
+            this.Nodes[i].ProjectedLocation = new Vertex(p.X, p.Y, p.Z);
             ME.Device2D.arc(p.X, p.Y, 5, 0, Math.PI * 2, true);
             let selected = false;
             let style = "#000000";
-            for (let j = 0; j < this.SelectedPath.length; j++)
+            if (this.SelectedPath)
             {
-                if (this.SelectedPath[j] == this.Nodes[i])
+                for (let j = 0; j < this.SelectedPath.length; j++)
                 {
-                    selected = true;
-                    if (j == 0)
+                    if (this.SelectedPath[j] == this.Nodes[i])
                     {
-                        style = '#9ACD32';
+                        selected = true;
+                        if (j == 0)
+                        {
+                            style = '#9ACD32';
+                        }
+                        else if (j == this.SelectedPath.length - 1)
+                        {
+                            style = '#B22222';
+                        }
+                        else
+                        {
+                            style = '#4682B4';
+                        }
+                        break;
                     }
-                    else if (j == this.SelectedPath.length - 1)
-                    {
-                        style = '#B22222';
-                    }
-                    else
-                    {
-                        style = '#4682B4';
-                    }
-                    break;
                 }
-            }
+            }    
+            let sel = false;
             if (this.Nodes[i].Selected == true)
             {
+                sel = true;
                 style = '#FFA500';
             }
-            if (this.Nodes[i].Selected == true || selected)
+            else if (this.Nodes[i].Hovered == true)
+            {
+                sel = true;
+                style = '#C8A500';
+            }
+            if (sel || selected)
             {
                 ME.Device2D.fillStyle = style;
                 ME.Device2D.fill();
@@ -169,6 +194,7 @@ let Node = class Node
         this._distance = Number.MAX_SAFE_INTEGER;
         this.Enabled = true;
         this.Selected = false;
+        this.Hovered = false;
     }
     CreatePathTo(_node, _reversible)
     {

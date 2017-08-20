@@ -20,6 +20,10 @@ var Vertex = class Vertex
         this.Y -= v.Y;
         this.Z -= v.Z;
     }
+    DistanceTo(v)
+    {
+        return Math.sqrt(Math.pow(this.X - v.X, 2) + Math.pow(this.Y - v.Y, 2) + Math.pow(this.Z - v.Z, 2));
+    }
 }
 var Camera = class Camera
 {
