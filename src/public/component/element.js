@@ -176,8 +176,12 @@ let Graph = class Graph
                 ME.Device2D.strokeStyle = style;
                 ME.Device2D.stroke();
             }    
-            ME.Device2D.textAlign="center";
-            ME.Device2D.fillText("'" + this.Nodes[i].Name + "' = (" + this.Nodes[i].Location.X + ", " + this.Nodes[i].Location.Y + ", " + this.Nodes[i].Location.Z + ")", p.X, p.Y + 3.5);
+            ME.Device2D.textAlign = "center";
+            let x = new Number(this.Nodes[i].Location.X).toFixed(1);
+            let y = new Number(this.Nodes[i].Location.Y).toFixed(1);
+            let z = new Number(this.Nodes[i].Location.Z).toFixed(1);
+            this.Nodes[i].Location = new Vertex(parseFloat(x), parseFloat(y), parseFloat(z));
+            ME.Device2D.fillText("'" + this.Nodes[i].Name + "' = (" + x + ", " + y + ", " + z + ")", p.X, p.Y + 20);
             ME.Device2D.fillStyle = '#000000';
             ME.Device2D.strokeStyle = '#000000';
         }

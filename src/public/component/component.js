@@ -11,6 +11,9 @@ let RC2;
 let g;
 
 let graph;
+
+let selectedNode = null;
+let changeName = false;
 function Main()
 {
     url = ParseURL();
@@ -23,6 +26,7 @@ function Main()
     RC2.addEventListener("touchend", _event_onTouchUp);
     RC2.addEventListener("mousemove", _event_onMouseMove);
     RC2.addEventListener("mouseover", _event_onMouseMove);
+    window.addEventListener("keydown", _event_onKeyPress);
     RC2.addEventListener("touchmove", _event_onTouchMove);
     RC2.addEventListener("mousewheel", _event_onMouseWheel);
     RC2.addEventListener("DOMMouseScroll", _event_onMouseWheel);
@@ -132,9 +136,67 @@ function Initialize()
     g.RegisterElement(el);
     //g.GetPath(A, D);
 }
-function _event_onNodeSelect(event)
+function _event_onKeyPress(event)
 {
     console.log(event);
+    if (selectedNode)
+    {        
+        if (changeName)
+        {
+            if (event.key.length === 1)
+            {
+                selectedNode.Name += event.key;
+            }
+            else if (event.key === "Backspace")
+            {
+                selectedNode.Name = selectedNode.Name.substring(0, selectedNode.Name.length - 1);
+            }
+            else if (event.key === "Enter")
+            {
+                changeName = false;
+            }
+        }
+        else
+        {
+            let speed = 0.1;
+            if (event.key === "ArrowUp")
+            {
+                selectedNode.Location.Y += speed;
+            }
+            if (event.key === "ArrowDown")
+            {
+                selectedNode.Location.Y -= speed;
+            }
+            if (event.key === "ArrowLeft")
+            {
+                selectedNode.Location.X -= speed;
+            }
+            if (event.key === "ArrowRight")
+            {
+                selectedNode.Location.X += speed;
+            }
+            if (event.key === "PageUp")
+            {
+                selectedNode.Location.Z -= speed;
+            }
+            if (event.key === "PageDown")
+            {
+                selectedNode.Location.Z += speed;
+            }
+            if (event.key === "n")
+            {
+                changeName = true;
+            }
+        }    
+    }    
+}
+function _event_onNodeSelect(event)
+{
+    if (!selectedNode)
+    {
+        selectedNode = event;
+        selectedNode.Selected = true;
+    }
 }
 function _event_onNavigationSelect(event)
 {
@@ -179,6 +241,7 @@ function _event_onMouseUp(event)
     MouseButton = 0;
     UpdateURL();
     RC2.style.cursor = "Default";
+    selectedNode = null;
     for (let i = 0; i < graph.Nodes.length; i++)
     {
         let child = graph.Nodes[i];
@@ -188,7 +251,7 @@ function _event_onMouseUp(event)
         }
         else
         {
-
+            child.Selected = false;
         }
     }
 }

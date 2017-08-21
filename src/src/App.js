@@ -116,7 +116,7 @@ class App extends Component
         };
         return (
             <div>
-                <Navbar style={{ position: "fixed", top: 0 }} ref={(e) => this.NavigationBar = e} fixedTop>
+                <Navbar fluid style={{ position: "fixed", top: 0 }} ref={(e) => this.NavigationBar = e} fixedTop>
                     <Navbar.Header>
                         <Navbar.Brand> {navigation["header"]} </Navbar.Brand>
                     </Navbar.Header>
