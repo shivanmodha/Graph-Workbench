@@ -13,7 +13,9 @@ let g;
 let graph;
 
 let selectedNode = null;
+
 let changeName = false;
+
 function Main()
 {
     url = ParseURL();
@@ -113,7 +115,7 @@ function Initialize()
     obj = new Object3D(ME, Vertices, Indices, "OBJ");
 
     let el = new Element(obj);
-    
+
     graph = new Graph();
 
     g = new Graph();
@@ -140,23 +142,8 @@ function _event_onKeyPress(event)
 {
     console.log(event);
     if (selectedNode)
-    {        
-        if (changeName)
-        {
-            if (event.key.length === 1)
-            {
-                selectedNode.Name += event.key;
-            }
-            else if (event.key === "Backspace")
-            {
-                selectedNode.Name = selectedNode.Name.substring(0, selectedNode.Name.length - 1);
-            }
-            else if (event.key === "Enter")
-            {
-                changeName = false;
-            }
-        }
-        else
+    {
+        if (!changeName)
         {
             let speed = 0.1;
             if (event.key === "ArrowUp")
@@ -183,12 +170,13 @@ function _event_onKeyPress(event)
             {
                 selectedNode.Location.Z += speed;
             }
-            if (event.key === "n")
+            if (event.key === "p")
             {
+                window.dispatchEvent(new CustomEvent("_event_onSignalProperties", { detail: { node: selectedNode } }));
                 changeName = true;
             }
-        }    
-    }    
+        }
+    }
 }
 function _event_onNodeSelect(event)
 {
@@ -218,12 +206,12 @@ function _event_onNavigationSelect(event)
     else if (navigation === "_navigation_view_zoomout")
     {
         ME.Camera.Location.Z += 1;
-        UpdateURL();        
+        UpdateURL();
     }
     else if (navigation === "_navigation_view_resetcamera")
     {
         ME.Camera.Location = new Vertex(0, 0, 5);
-        UpdateURL();            
+        UpdateURL();
     }
 }
 function _event_onMouseDown(event)
@@ -267,7 +255,7 @@ function _event_onMouseMove(event)
         let child = graph.Nodes[i];
         if (child.ProjectedLocation.DistanceTo(new Vertex(MousePosition.X, MousePosition.Y, 0)) < 10)
         {
-            graph.Nodes[i].Hovered = true;            
+            graph.Nodes[i].Hovered = true;
         }
         else
         {
