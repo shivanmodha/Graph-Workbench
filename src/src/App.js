@@ -3,7 +3,7 @@ import ReactDOM from 'react-dom';
 import logo from './logo.svg';
 import './App.css';
 import { Navbar, Nav, NavItem, NavDropdown, MenuItem } from 'react-bootstrap';
-import { ButtonToolbar, ToggleButtonGroup, ToggleButton } from 'react-bootstrap';
+import { Button, ButtonGroup, ButtonToolbar, ToggleButtonGroup, ToggleButton } from 'react-bootstrap';
 import { Grid, Row, Col } from 'react-bootstrap';
 import { Breadcrumb } from 'react-bootstrap';
 import { Alert } from 'react-bootstrap';
@@ -111,21 +111,21 @@ class App extends Component
     }
     _event_modal_onLocationX(event)
     {
-        this.state.SelectedNode.Location.X = parseFloat(event.target.value);
+        this.state.SelectedNode.Location.X = event.target.value;
         this.setState({
             SelectedNode: this.state.SelectedNode
         });
     }
     _event_modal_onLocationY(event)
     {
-        this.state.SelectedNode.Location.Y = parseFloat(event.target.value);
+        this.state.SelectedNode.Location.Y = event.target.value;
         this.setState({
             SelectedNode: this.state.SelectedNode
         });
     }
     _event_modal_onLocationZ(event)
     {
-        this.state.SelectedNode.Location.Z = parseFloat(event.target.value);
+        this.state.SelectedNode.Location.Z = event.target.value;
         this.setState({
             SelectedNode: this.state.SelectedNode
         });
@@ -213,49 +213,55 @@ class App extends Component
                     </Modal.Header>
                     <Modal.Body>
                         <Form horizontal>
+                            <p>General</p>
                             <FormGroup>
-                                <Col sm={2} style={{ textAlign: "right" }}>
-                                    Name
+                                <Col sm={2} style={{ textAlign: "right", paddingTop: 5 }}>
+                                    Node
                                 </Col>
                                 <Col sm={10}>
-                                    <FormControl type="text" value={node_name} placeholder={node_name_old} onChange={this._event_modal_onNameChanged} />
+                                    <InputGroup>    
+                                        <InputGroup.Addon>id</InputGroup.Addon>  
+                                        <FormControl type="text" value={node_name} placeholder={node_name_old} onChange={this._event_modal_onNameChanged} />
+                                        <InputGroup.Addon>name</InputGroup.Addon>  
+                                        <FormControl type="text" value={node_name} placeholder={node_name_old} onChange={this._event_modal_onNameChanged} />
+                                    </InputGroup>
                                 </Col>
                             </FormGroup>
                             <FormGroup>
-                                <Col sm={2} style={{ textAlign: "right" }}>
+                                <Col sm={2} style={{ textAlign: "right", paddingTop: 5 }}>
                                     Location
                                 </Col>
                                 <Col sm={10}>
                                     <InputGroup>
                                         <InputGroup.Addon>x</InputGroup.Addon>    
                                         <FormControl type="number" value={node_location_x} placeholder="x" onChange={this._event_modal_onLocationX} />
-                                        <InputGroup.Addon>x</InputGroup.Addon>   
+                                        <InputGroup.Addon>y</InputGroup.Addon>   
                                         <FormControl type="number" value={node_location_y} placeholder="y" onChange={this._event_modal_onLocationY} />
-                                        <InputGroup.Addon>x</InputGroup.Addon>   
+                                        <InputGroup.Addon>z</InputGroup.Addon>   
                                         <FormControl type="number" value={node_location_z} placeholder="z" onChange={this._event_modal_onLocationZ} />
                                     </InputGroup>
                                 </Col>
                             </FormGroup>
+                            <FormGroup style={{ height: 1, backgroundColor: "rgba(10, 10, 10, 0.10)" }}></FormGroup>
+                            <FormGroup>
+                                <Col sm={2} style={{ textAlign: "right", paddingTop: 5 }}>
+                                    Neighbors
+                                </Col>
+                                <Col sm={10}>
+                                    <InputGroup>
+                                        <InputGroup.Addon>01</InputGroup.Addon>
+                                        <FormControl type="text" value="test" readonly />
+                                    </InputGroup>
+                                </Col>                                
+                            </FormGroup>
+                            <FormGroup style={{ height: 1, backgroundColor: "rgba(10, 10, 10, 0.10)" }}></FormGroup>
+                            <FormGroup style={{ textAlign: "right", marginRight: 0 }}>
+                                <ButtonGroup>
+                                    <Button bsStyle="danger" href="#">Delete</Button>
+                                    <Button bsStyle="success" href="#">Ok</Button>
+                                </ButtonGroup>    
+                            </FormGroup>    
                         </Form>
-                        {/*<h4>Attributes</h4>
-                        <Grid>
-                            <Row className="show-grid">
-                                <Col xs={4} md={1} style={{ textAlign: "right", paddingRight: 5, paddingTop: 5 }}>
-                                    <p><i>Name</i></p>
-                                </Col>
-                                <Col xs={5} md={4} style={{ paddingLeft: 5 }}>
-                                    <FormControl type="text" value={node_name} placeholder="Enter Name" onChange={this._event_modal_onNameChanged} />
-                                </Col>
-                            </Row>
-                            <Row className="show-grid">
-                                <Col xs={4} md={1} style={{ textAlign: "right", paddingRight: 5, paddingTop: 5 }}>
-                                    <p><i>Location</i></p>
-                                </Col>
-                                <Col xs={5} md={4} style={{ paddingLeft: 5 }}>
-                                    <p>x<font size={5}>{node_location_x}</font>, y<font size={5}>{node_location_y}</font>, z<font size={5}>{node_location_z}</font></p>
-                                </Col>
-                            </Row>
-                        </Grid>*/}
                     </Modal.Body>
                 </Modal>
             </div>
