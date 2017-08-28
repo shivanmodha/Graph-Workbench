@@ -90,7 +90,7 @@ var Engine = class Engine
 {
     /**
      * Creates and initializes a new rendering window for OpenGL
-     * @param {Element} canvas 
+     * @param {Element} canvas
      */
     constructor(canvas2D, canvas)
     {
@@ -151,7 +151,7 @@ var Engine = class Engine
     }
     /**
      * Reads a shader file and loads it into a shader object for later use
-     * @param {String} file 
+     * @param {String} file
      */
     LoadShaderFile(file)
     {
@@ -197,7 +197,7 @@ var Engine = class Engine
         var WorldMatrix = m4.translate(this.ViewProjectionMatrix, 0, 0, 0);
         WorldMatrix = m4.xRotate(WorldMatrix, degToRad(this.Camera.Rotation.X));
         WorldMatrix = m4.yRotate(WorldMatrix, degToRad(this.Camera.Rotation.Y));
-        WorldMatrix = m4.zRotate(WorldMatrix, degToRad(this.Camera.Rotation.Z));  
+        WorldMatrix = m4.zRotate(WorldMatrix, degToRad(this.Camera.Rotation.Z));
         WorldMatrix = m4.translate(WorldMatrix, Location.X - this.Camera.Location.X, Location.Y - this.Camera.Location.Y, Location.Z - this.Camera.Location.Z);
         var ClipSpace = m4.transformVector(WorldMatrix, [0, 0, 0, 1]);
         ClipSpace[0] /= ClipSpace[3];
@@ -211,10 +211,10 @@ var Engine = class Engine
         var WorldMatrix = m4.translate(this.ViewProjectionMatrix, 0, 0, 0);
         WorldMatrix = m4.xRotate(WorldMatrix, degToRad(this.Camera.Rotation.X));
         WorldMatrix = m4.yRotate(WorldMatrix, degToRad(this.Camera.Rotation.Y));
-        WorldMatrix = m4.zRotate(WorldMatrix, degToRad(this.Camera.Rotation.Z));  
-        WorldMatrix = m4.translate(WorldMatrix, -this.Camera.Location.X, -this.Camera.Location.Y, -this.Camera.Location.Z); 
-        WorldMatrix = m4.zRotate(WorldMatrix, degToRad(z_rotation)); 
-        WorldMatrix = m4.translate(WorldMatrix, Location.X, Location.Y, Location.Z); 
+        WorldMatrix = m4.zRotate(WorldMatrix, degToRad(this.Camera.Rotation.Z));
+        WorldMatrix = m4.translate(WorldMatrix, -this.Camera.Location.X, -this.Camera.Location.Y, -this.Camera.Location.Z);
+        WorldMatrix = m4.zRotate(WorldMatrix, degToRad(z_rotation));
+        WorldMatrix = m4.translate(WorldMatrix, Location.X, Location.Y, Location.Z);
         var ClipSpace = m4.transformVector(WorldMatrix, [0, 0, 0, 1]);
         ClipSpace[0] /= ClipSpace[3];
         ClipSpace[1] /= ClipSpace[3];
@@ -264,7 +264,7 @@ var Object3D = class Object3D
             this.vertices[vertexLocation + 1] = vert[i].Y;
             this.vertices[vertexLocation + 2] = vert[i].Z;
             vertexLocation = vertexLocation + 3
-            
+
             this.colors[colorLocation + 0] = vert[i].R;
             this.colors[colorLocation + 1] = vert[i].G;
             this.colors[colorLocation + 2] = vert[i].B;
@@ -362,7 +362,7 @@ var Object3D = class Object3D
         this.WorldMatrix = m4.translate(this.WorldMatrix, this.Location.X - engine.Camera.Location.X, this.Location.Y - engine.Camera.Location.Y, this.Location.Z - engine.Camera.Location.Z);
         this.WorldMatrix = m4.xRotate(this.WorldMatrix, degToRad(this.Revolution.X));
         this.WorldMatrix = m4.yRotate(this.WorldMatrix, degToRad(this.Revolution.Y));
-        this.WorldMatrix = m4.zRotate(this.WorldMatrix, degToRad(this.Revolution.Z));        
+        this.WorldMatrix = m4.zRotate(this.WorldMatrix, degToRad(this.Revolution.Z));
         this.WorldMatrix = m4.translate(this.WorldMatrix, this.RevolutionRadius.X, this.RevolutionRadius.Y, this.RevolutionRadius.Z);
         this.WorldMatrix = m4.xRotate(this.WorldMatrix, degToRad(this.Rotation.X));
         this.WorldMatrix = m4.yRotate(this.WorldMatrix, degToRad(this.Rotation.Y));

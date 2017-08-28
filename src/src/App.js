@@ -5,7 +5,7 @@ import './App.css';
 import { Navbar, Nav, NavItem, NavDropdown, MenuItem } from 'react-bootstrap';
 import { Button, ButtonGroup, ButtonToolbar, ToggleButtonGroup, ToggleButton } from 'react-bootstrap';
 import { Grid, Row, Col } from 'react-bootstrap';
-import { Breadcrumb } from 'react-bootstrap';
+import { Well } from 'react-bootstrap';
 import { Alert, Glyphicon } from 'react-bootstrap';
 import { Modal, FormGroup, FormControl, Form, InputGroup } from 'react-bootstrap';
 
@@ -19,6 +19,8 @@ class App extends Component
         this._event_onResize = this._event_onResize.bind(this);
         this._event_onNavigationSelect = this._event_onNavigationSelect.bind(this);
         this._event_onSignalProperties = this._event_onSignalProperties.bind(this);
+        this._event_onSignalNeighbor = this._event_onSignalNeighbor.bind(this);
+        this._event_onURLChange = this._event_onURLChange.bind(this);
         this._event_modal_onNameChanged = this._event_modal_onNameChanged.bind(this);
         this._event_modal_onIDChanged = this._event_modal_onIDChanged.bind(this);
         this._event_modal_onLocationX = this._event_modal_onLocationX.bind(this);
@@ -26,7 +28,14 @@ class App extends Component
         this._event_modal_onLocationZ = this._event_modal_onLocationZ.bind(this);
         this._event_modal_onOk = this._event_modal_onOk.bind(this);
         this._event_modal_onDelete = this._event_modal_onDelete.bind(this);
+        this._event_modal_onCreateNeighbor = this._event_modal_onCreateNeighbor.bind(this);
+        this._event_modal_onDeleteNeighbor = this._event_modal_onDeleteNeighbor.bind(this);
+        this._event_modal_onIsolateNeighbors = this._event_modal_onIsolateNeighbors.bind(this);
+        this.CreateNeighbor = this.CreateNeighbor.bind(this);
+        this.CreateNeighbors = this.CreateNeighbors.bind(this);
         window.addEventListener("_event_onSignalProperties", this._event_onSignalProperties);
+        window.addEventListener("_event_onSignalNeighbor", this._event_onSignalNeighbor);
+        window.addEventListener("_event_onURLChange", this._event_onURLChange);
     }
     componentWillMount()
     {
@@ -34,7 +43,8 @@ class App extends Component
             NavigationHeight: 0,
             BreadHeight: 0,
             Properties: false,
-            SelectedNode: null
+            SelectedNode: null,
+            Camera: "0, 0, 0"
         });
     }
     componentDidMount()
@@ -59,6 +69,39 @@ class App extends Component
         return (
             <NavDropdown title={title} eventKey={element["eventKey"]} id={element["id"]}>{links}</NavDropdown>
         );
+    }
+    CreateNeighbor(int, node)
+    {
+        return (            
+            <InputGroup style={{ paddingBottom: 10 }}>
+                <InputGroup.Addon>{int + 1}</InputGroup.Addon>
+                <FormControl type="text" value={"pathTo={" + node.Neighbors[int].EndNode.ID + ", " + node.Neighbors[int].EndNode.Name + "}, distance={" + node.Neighbors[int].Distance + "}"} readOnly />
+                <InputGroup.Button>
+                        <Button href="#" bsStyle="danger" onClick={() => this._event_modal_onDeleteNeighbor(int)}><Glyphicon glyph="remove" /></Button>
+                </InputGroup.Button>
+            </InputGroup>
+        )
+    }
+    CreateNeighbors()
+    {
+        if (this.state.Properties)
+        {
+            let node = this.state.SelectedNode;
+            let itms = [];
+            for (let i = 0; i < node.Neighbors.length; i++)
+            {
+                itms.push(this.CreateNeighbor(i, node));
+            }
+            return (
+                <div>
+                    {itms}
+                </div>
+            );
+        }
+        else
+        {
+            return (<p>No Neighbors</p>)
+        }
     }
     NavigationCollapse()
     {
@@ -94,7 +137,24 @@ class App extends Component
     }
     _event_onNavigationSelect(eventKey)
     {
-        window.dispatchEvent(new CustomEvent("_event_navigation_select_", { detail: { key: eventKey } }));
+        let details = {
+            key: eventKey
+        };
+        if (eventKey === "_navigation_node_bulkcreate")
+        {
+            let prompt = window.prompt("Shivan", 5);
+            let num = 5;
+            if (prompt == null || prompt == "")
+            {
+                num = 0;
+            }
+            else
+            {
+                num = parseInt(prompt);
+            }
+            details["number"] = num;
+        }
+        window.dispatchEvent(new CustomEvent("_event_navigation_select_", { detail: details }));
     }
     _event_onSignalProperties(event)
     {
@@ -104,7 +164,18 @@ class App extends Component
             SelectedNodeOldName: event.detail.node.Name,
             SelectedNodeOldID: event.detail.node.ID
         });
-        console.log(event.detail.node);
+    }
+    _event_onSignalNeighbor(event)
+    {
+        this.setState({
+            Properties: true
+        });
+    }
+    _event_onURLChange(event)
+    {
+        this.setState({
+            Camera: event.detail.camera
+        });
     }
     _event_modal_onNameChanged(event)
     {
@@ -153,6 +224,7 @@ class App extends Component
     }
     _event_modal_onDelete(event)
     {
+        this._event_modal_onIsolateNeighbors();
         window.dispatchEvent(new CustomEvent("_event_modal_delete_", { detail: {} }));
         this.setState({
             Properties: false,
@@ -160,6 +232,38 @@ class App extends Component
             SelectedNodeOldName: null,
             SelectedNodeOldID: null
         });
+    }
+    _event_modal_onCreateNeighbor(event)
+    {
+        window.dispatchEvent(new CustomEvent("_event_modal_createneighbor_", { detail: {} }));
+        this.setState({
+            Properties: false
+        });
+    }
+    _event_modal_onDeleteNeighbor(event)
+    {
+        let node = this.state.SelectedNode;
+        let endNode = node.Neighbors[event].EndNode;
+        node.Neighbors.splice(event, 1);
+        for (let i = 0; i < endNode.Neighbors.length; i++)
+        {
+            if (endNode.Neighbors[i].EndNode === node)
+            {
+                endNode.Neighbors.splice(i, 1);
+                break;
+            }
+        }
+        this.setState({
+            SelectedNode: this.state.SelectedNode
+        });
+    }
+    _event_modal_onIsolateNeighbors(event)
+    {
+        let node = this.state.SelectedNode;
+        while (node.Neighbors.length > 0)
+        {
+            this._event_modal_onDeleteNeighbor(0);
+        }
     }
     updateSize()
     {
@@ -170,7 +274,7 @@ class App extends Component
     {
         return {
             position: "fixed",
-            top: this.state.NavigationHeight + this.state.BreadHeight,
+            top: this.state.NavigationHeight,
             width: "100%",
             height: window.innerHeight - this.state.NavigationHeight - this.state.BreadHeight,
             border: 0,
@@ -242,14 +346,11 @@ class App extends Component
                     </Navbar.Header>
                     {this.NavigationCollapse()}
                 </Navbar>
-                <Breadcrumb style={{paddingTop: this.state.NavigationHeight + 5 }} ref={(e) => this.BreadBar = e}>
-                    <Breadcrumb.Item active>
-                        bench
-                    </Breadcrumb.Item>
-                    <Breadcrumb.Item href="#">
-                        Untitled Document
-                    </Breadcrumb.Item>
-                </Breadcrumb>
+                <Well bsSize="small" style={{ position: "fixed", top: window.innerHeight - this.state.BreadHeight, width: "100%", borderRadius: 0, boxShadow: "none", textAlign: "right" }} ref={(e) => this.BreadBar = e}>
+                    <div style={{ display: "inline", position: "relative", right: 10 }}>
+                        {this.state.Camera}
+                    </div>
+                </Well>
                 <div id="renderer" style={this.GetStyle()}>
                     <canvas id="studios.vanish.component.3D" style={this.GetStyle()}></canvas>
                     <canvas id="studios.vanish.component.2D" style={this.GetStyle()}></canvas>
@@ -290,7 +391,7 @@ class App extends Component
                                     <div style={{ textAlign: "left", paddingTop: 15 }}>
                                         <ButtonGroup>
                                             <Button href="#">Center Camera</Button>
-                                        </ButtonGroup>    
+                                        </ButtonGroup>
                                     </div>
                                 </Col>
                             </FormGroup>
@@ -301,19 +402,12 @@ class App extends Component
                                     Neighbors
                                 </Col>
                                 <Col sm={10}>
-                                    <InputGroup style={{ paddingBottom: 10 }}>
-                                        <InputGroup.Addon>01</InputGroup.Addon>
-                                        <FormControl type="text" value="pathTo=n:02, distance=1.0" readonly />
-                                        <InputGroup.Button>
-                                                <Button href="#"><Glyphicon glyph="edit" /></Button>
-                                                <Button href="#" bsStyle="danger"><Glyphicon glyph="remove" /></Button>
-                                        </InputGroup.Button>
-                                    </InputGroup>
+                                    {this.CreateNeighbors()}    
                                     <div style={{ textAlign: "left", paddingTop: 0 }}>
                                         <ButtonGroup>
-                                            <Button href="#">Clear</Button>
-                                            <Button href="#" bsStyle="success">Create</Button>
-                                        </ButtonGroup>    
+                                            <Button href="#" onClick={this._event_modal_onIsolateNeighbors}>Isolate</Button>
+                                            <Button href="#" bsStyle="success" onClick={this._event_modal_onCreateNeighbor}>Create</Button>
+                                        </ButtonGroup>
                                     </div>
                                 </Col>
                             </FormGroup>
@@ -325,7 +419,7 @@ class App extends Component
                                     <div style={{ textAlign: "right", paddingBottom: 10 }}>
                                         <ButtonGroup>
                                             <Button href="#">Bind Element</Button>
-                                        </ButtonGroup>    
+                                        </ButtonGroup>
                                     </div>
                                 </Col>
                             </FormGroup>

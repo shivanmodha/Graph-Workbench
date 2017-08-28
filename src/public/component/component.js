@@ -16,6 +16,11 @@ let selectedNode = null;
 let selectedNodeIndex = -1;
 
 let changeName = false;
+let bulkcreate = 0;
+let createNeighbor = false;
+
+let start = null;
+let end = null;
 
 function Main()
 {
@@ -25,6 +30,7 @@ function Main()
     window.addEventListener("_event_navigation_select_", _event_onNavigationSelect);
     window.addEventListener("_event_modal_ok_", _event_modal_onOk);
     window.addEventListener("_event_modal_delete_", _event_modal_onDelete);
+    window.addEventListener("_event_modal_createneighbor_", _event_modal_onCreateNeighbor);
     RC2.addEventListener("mousedown", _event_onMouseDown);
     RC2.addEventListener("touchstart", _event_onTouchDown);
     RC2.addEventListener("mouseup", _event_onMouseUp);
@@ -48,6 +54,7 @@ function Main()
 function UpdateURL()
 {
     let url = "@" + round(ME.Camera.Location.X, 2) + "," + round(ME.Camera.Location.Y, 2) + "," + round(ME.Camera.Location.Z, 2) + "z" + ((RenderedFloor / 2) + 1);
+    window.dispatchEvent(new CustomEvent("_event_onURLChange", { detail: { camera: round(ME.Camera.Location.X, 2) + ", " + round(ME.Camera.Location.Y, 2) + ", " + round(ME.Camera.Location.Z, 2)}}));
     window.history.replaceState({ "html": url }, "", url)
 }
 function round(num, p)
@@ -142,7 +149,6 @@ function Initialize()
 }
 function _event_onKeyPress(event)
 {
-    console.log(event);
     if (selectedNode)
     {
         if (!changeName)
@@ -188,6 +194,15 @@ function _event_onNodeSelect(event, nIndex)
         selectedNode.Selected = true;
         selectedNodeIndex = nIndex;
     }
+    if (createNeighbor)
+    {
+        if (event != selectedNode)
+        {
+            selectedNode.CreatePathTo(event, true);
+            createNeighbor = false;
+            window.dispatchEvent(new CustomEvent("_event_onSignalNeighbor", { detail: {} }));
+        }
+    }
 }
 function _event_onNavigationSelect(event)
 {
@@ -200,19 +215,34 @@ function _event_onNavigationSelect(event)
     {
         let N = new Node("New Node", new Vertex(0, 0, 0));
         graph.RegisterNode(N);
+        if (selectedNode != null)
+        {
+            selectedNode.Selected = false;
+        }
+        selectedNode = null;
+        selectedNodeIndex = -1;
         _event_onNodeSelect(graph.Nodes[graph.Nodes.length - 1], graph.Nodes.length - 1);
         window.dispatchEvent(new CustomEvent("_event_onSignalProperties", { detail: { node: selectedNode } }));
         changeName = true;
+    }
+    else if (navigation === "_navigation_node_bulkcreate")
+    {
+        bulkcreate = event.detail.number;
+        if (bulkcreate > 0)
+        {
+            _event_onNavigationSelect({ detail: { key: "_navigation_node_create" } });
+            bulkcreate--;
+        }
     }
     else if (navigation === "_navigation_node_inspect")
     {
         window.dispatchEvent(new CustomEvent("_event_onSignalProperties", { detail: { node: selectedNode } }));
         changeName = true;
-    }    
+    }
     else if (navigation === "_navigation_node_remove")
     {
         _event_modal_onDelete();
-    }    
+    }
     else if (navigation === "_navigation_view_zoomin")
     {
         ME.Camera.Location.Z -= 1;
@@ -227,6 +257,27 @@ function _event_onNavigationSelect(event)
     {
         ME.Camera.Location = new Vertex(0, 0, 5);
         UpdateURL();
+    }
+    else if (navigation === "_navigation_path_start")
+    {
+        if (selectedNode)
+        {
+            start = selectedNode;
+        }
+    }
+    else if (navigation === "_navigation_path_end")
+    {
+        if (selectedNode)
+        {
+            end = selectedNode;
+        }
+    }
+    else if (navigation === "_navigation_path_calc")
+    {
+        if (start && end)
+        {
+            graph.GetPath(start, end);
+        }
     }
 }
 function _event_onMouseDown(event)
@@ -244,8 +295,11 @@ function _event_onMouseUp(event)
     MouseButton = 0;
     UpdateURL();
     RC2.style.cursor = "Default";
-    selectedNode = null;
-    selectedNodeIndex = -1;
+    if (!createNeighbor)
+    {
+        selectedNode = null;
+        selectedNodeIndex = -1;
+    }    
     for (let i = 0; i < graph.Nodes.length; i++)
     {
         let child = graph.Nodes[i];
@@ -255,7 +309,10 @@ function _event_onMouseUp(event)
         }
         else
         {
-            child.Selected = false;
+            if (!createNeighbor)
+            {
+                child.Selected = false;
+            }    
         }
     }
 }
@@ -294,11 +351,29 @@ function _event_onMouseWheel(event)
 function _event_modal_onOk(event)
 {
     changeName = false;
+    if (bulkcreate > 0)
+    {
+        setTimeout(() =>
+        {
+            _event_onNavigationSelect({ detail: { key: "_navigation_node_bulkcreate", number: bulkcreate-- } });
+        }, 1);
+    }
 }
 function _event_modal_onDelete(event)
 {
     graph.Nodes.splice(selectedNodeIndex, 1);
     changeName = false;
+    if (bulkcreate > 0)
+    {
+        setTimeout(() =>
+        {
+            _event_onNavigationSelect({ detail: { key: "_navigation_node_bulkcreate", number: bulkcreate-- } });
+        }, 1);
+    }
+}
+function _event_modal_onCreateNeighbor(event)
+{
+    createNeighbor = true;
 }
 function MainLoop()
 {
@@ -334,5 +409,13 @@ function Render()
     ME.Device2D.stroke();
     ME.Device2D.lineWidth = 0.3;
     graph.Render(ME, 0);
+    if (createNeighbor && selectedNode)
+    {
+        let p = ME.ProjectVertex(selectedNode.Location, 0);
+        ME.Device2D.beginPath();
+        ME.Device2D.moveTo(p.X, p.Y);
+        ME.Device2D.lineTo(MousePosition.X, MousePosition.Y);
+        ME.Device2D.stroke();
+    }
     //g.Render(ME, 0);
 }

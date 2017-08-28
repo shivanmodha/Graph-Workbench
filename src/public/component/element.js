@@ -109,7 +109,7 @@ let Graph = class Graph
                         selected = true;
                     }
                 }
-            }    
+            }
             for (let j = 0; j < this.Nodes[i].Neighbors.length; j++)
             {
                 ME.Device2D.beginPath();
@@ -154,7 +154,7 @@ let Graph = class Graph
                         break;
                     }
                 }
-            }    
+            }
             let sel = false;
             if (this.Nodes[i].Selected == true)
             {
@@ -175,7 +175,7 @@ let Graph = class Graph
             {
                 ME.Device2D.strokeStyle = style;
                 ME.Device2D.stroke();
-            }    
+            }
             ME.Device2D.textAlign = "center";
             let x = new Number(this.Nodes[i].Location.X).toFixed(1);
             let y = new Number(this.Nodes[i].Location.Y).toFixed(1);

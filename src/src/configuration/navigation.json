@@ -39,6 +39,18 @@
                 "Reset Camera": "_navigation_view_resetcamera"
             }
         },
+        "Path": {
+            "type": "dropdown",
+            "side": "right",
+            "eventKey": "_navigation_path",
+            "id": "nav-path-dropdown",
+            "children": {
+                "Set Selected as Start": "_navigation_path_start",
+                "Set Selected as End": "_navigation_path_end",
+                "div1": "divider",
+                "Calculate Path": "_navigation_path_calc"
+            }
+        },
         "Node": {
             "type": "dropdown",
             "side": "right",
@@ -46,6 +58,7 @@
             "id": "nav-element-dropdown",
             "children": {
                 "Create": "_navigation_node_create",
+                "Bulk Create": "_navigation_node_bulkcreate",
                 "Inspect": "_navigation_node_inspect",
                 "Remove": "_navigation_node_remove"
             }
