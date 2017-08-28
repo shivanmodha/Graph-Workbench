@@ -95,6 +95,7 @@ var Engine = class Engine
     constructor(canvas2D, canvas)
     {
         this.RenderingCanvas = canvas;
+        this.RenderingCanvas2D = canvas2D;
         this.Device = this.RenderingCanvas.getContext('webgl');
         this.Device2D = canvas2D.getContext('2d');
         var style = window.getComputedStyle(canvas);
@@ -134,9 +135,14 @@ var Engine = class Engine
         var style = window.getComputedStyle(this.RenderingCanvas);
         this.Device.viewportWidth = parseInt(style.width);
         this.Device.viewportHeight = parseInt(style.height);
+        this.RenderingCanvas.width = this.Device.viewportWidth;
+        this.RenderingCanvas.height = this.Device.viewportHeight;
+        this.RenderingCanvas2D.width = this.Device.viewportWidth;
+        this.RenderingCanvas2D.height = this.Device.viewportHeight;
+        var s = window.getComputedStyle(this.RenderingCanvas2D);
         this.Device.viewport(0, 0, this.Device.drawingBufferWidth, this.Device.drawingBufferHeight);
         this.Device.clear(this.Device.COLOR_BUFFER_BIT | this.Device.DEPTH_BUFFER_BIT);
-        this.Device2D.clearRect(0, 0, this.Device.drawingBufferWidth, this.Device.drawingBufferHeight);
+        this.Device2D.clearRect(0, 0, this.Device.viewportWidth, this.Device.viewportHeight);
         this.ViewProjectionMatrix = m4.perspective(degToRad(45), this.Device.viewportWidth / this.Device.viewportHeight, 0.1, 1000);
     }
     SetShaderWorlds(WorldMatrix, Shade)
@@ -202,8 +208,8 @@ var Engine = class Engine
         var ClipSpace = m4.transformVector(WorldMatrix, [0, 0, 0, 1]);
         ClipSpace[0] /= ClipSpace[3];
         ClipSpace[1] /= ClipSpace[3];
-        var pixelX = (ClipSpace[0] *  0.5 + 0.5) * this.RenderingCanvas.width;
-        var pixelY = (ClipSpace[1] * -0.5 + 0.5) * this.RenderingCanvas.height;
+        var pixelX = (ClipSpace[0] *  0.5 + 0.5) * this.RenderingCanvas2D.width;
+        var pixelY = (ClipSpace[1] * -0.5 + 0.5) * this.RenderingCanvas2D.height;
         return new Vertex(pixelX, pixelY, 0);
     }
     ProjectVertex(Location, z_rotation)
@@ -218,8 +224,8 @@ var Engine = class Engine
         var ClipSpace = m4.transformVector(WorldMatrix, [0, 0, 0, 1]);
         ClipSpace[0] /= ClipSpace[3];
         ClipSpace[1] /= ClipSpace[3];
-        var pixelX = (ClipSpace[0] *  0.5 + 0.5) * this.RenderingCanvas.width;
-        var pixelY = (ClipSpace[1] * -0.5 + 0.5) * this.RenderingCanvas.height;
+        var pixelX = (ClipSpace[0] *  0.5 + 0.5) * this.RenderingCanvas2D.width;
+        var pixelY = (ClipSpace[1] * -0.5 + 0.5) * this.RenderingCanvas2D.height;
         return new Vertex(pixelX, pixelY, 0);
     }
 }

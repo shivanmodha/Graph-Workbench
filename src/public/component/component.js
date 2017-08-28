@@ -125,6 +125,9 @@ function Initialize()
     obj = new Object3D(ME, Vertices, Indices, "OBJ");
     graph = new Graph();
 
+    let el = new Element(obj);
+    graph.RegisterElement(el);
+
     /*let el = new Element(obj);
 
     g = new Graph();
