@@ -13,6 +13,7 @@ let g;
 let graph;
 
 let selectedNode = null;
+let selectedNodeIndex = -1;
 
 let changeName = false;
 
@@ -22,6 +23,8 @@ function Main()
     RC3 = document.getElementById("studios.vanish.component.3D");
     RC2 = document.getElementById("studios.vanish.component.2D");
     window.addEventListener("_event_navigation_select_", _event_onNavigationSelect);
+    window.addEventListener("_event_modal_ok_", _event_modal_onOk);
+    window.addEventListener("_event_modal_delete_", _event_modal_onDelete);
     RC2.addEventListener("mousedown", _event_onMouseDown);
     RC2.addEventListener("touchstart", _event_onTouchDown);
     RC2.addEventListener("mouseup", _event_onMouseUp);
@@ -113,10 +116,9 @@ function Initialize()
         new Index(4, 6, 7)
     ]
     obj = new Object3D(ME, Vertices, Indices, "OBJ");
-
-    let el = new Element(obj);
-
     graph = new Graph();
+
+    /*let el = new Element(obj);
 
     g = new Graph();
     let A = new Node("A", new Vertex(0, 3, 0));
@@ -136,7 +138,7 @@ function Initialize()
     g.RegisterNode(D);
     g.RegisterNode(E);
     g.RegisterElement(el);
-    //g.GetPath(A, D);
+    //g.GetPath(A, D);*/
 }
 function _event_onKeyPress(event)
 {
@@ -170,7 +172,7 @@ function _event_onKeyPress(event)
             {
                 selectedNode.Location.Z += speed;
             }
-            if (event.key === "p")
+            if (event.key === "i")
             {
                 window.dispatchEvent(new CustomEvent("_event_onSignalProperties", { detail: { node: selectedNode } }));
                 changeName = true;
@@ -178,12 +180,13 @@ function _event_onKeyPress(event)
         }
     }
 }
-function _event_onNodeSelect(event)
+function _event_onNodeSelect(event, nIndex)
 {
     if (!selectedNode)
     {
         selectedNode = event;
         selectedNode.Selected = true;
+        selectedNodeIndex = nIndex;
     }
 }
 function _event_onNavigationSelect(event)
@@ -197,7 +200,19 @@ function _event_onNavigationSelect(event)
     {
         let N = new Node("New Node", new Vertex(0, 0, 0));
         graph.RegisterNode(N);
+        _event_onNodeSelect(graph.Nodes[graph.Nodes.length - 1], graph.Nodes.length - 1);
+        window.dispatchEvent(new CustomEvent("_event_onSignalProperties", { detail: { node: selectedNode } }));
+        changeName = true;
     }
+    else if (navigation === "_navigation_node_inspect")
+    {
+        window.dispatchEvent(new CustomEvent("_event_onSignalProperties", { detail: { node: selectedNode } }));
+        changeName = true;
+    }    
+    else if (navigation === "_navigation_node_remove")
+    {
+        _event_modal_onDelete();
+    }    
     else if (navigation === "_navigation_view_zoomin")
     {
         ME.Camera.Location.Z -= 1;
@@ -230,12 +245,13 @@ function _event_onMouseUp(event)
     UpdateURL();
     RC2.style.cursor = "Default";
     selectedNode = null;
+    selectedNodeIndex = -1;
     for (let i = 0; i < graph.Nodes.length; i++)
     {
         let child = graph.Nodes[i];
         if (child.Hovered)
         {
-            _event_onNodeSelect(child);
+            _event_onNodeSelect(child, i);
         }
         else
         {
@@ -274,6 +290,15 @@ function _event_onMouseWheel(event)
     let delta = Math.max(-speed, Math.min(speed, (e.wheelDelta || -e.detail)));
     ME.Camera.Location.Z -= (delta);
     UpdateURL();
+}
+function _event_modal_onOk(event)
+{
+    changeName = false;
+}
+function _event_modal_onDelete(event)
+{
+    graph.Nodes.splice(selectedNodeIndex, 1);
+    changeName = false;
 }
 function MainLoop()
 {

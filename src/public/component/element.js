@@ -187,11 +187,13 @@ let Graph = class Graph
         }
     }
 }
+let nID = 0;
 let Node = class Node
 {
     constructor(_name, _location)
     {
         this.Name = _name;
+        this.ID = nID;
         this.Location = _location;
         this.Neighbors = [];
         this._previous = null;
@@ -199,6 +201,7 @@ let Node = class Node
         this.Enabled = true;
         this.Selected = false;
         this.Hovered = false;
+        nID++;
     }
     CreatePathTo(_node, _reversible)
     {
