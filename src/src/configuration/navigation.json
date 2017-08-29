@@ -46,8 +46,9 @@
             "children": {
                 "Create": "_navigation_node_create",
                 "Bulk Create": "_navigation_node_bulkcreate",
-                "Inspect": "_navigation_node_inspect",
-                "Remove": "_navigation_node_remove"
+                "Remove": "_navigation_node_remove",
+                "div1": "divider",
+                "Inspect": "_navigation_node_inspect"
             }
         },
         "Element": {
@@ -57,14 +58,15 @@
             "id": "nav-element-dropdown",
             "children": {
                 "Create": "_navigation_element_create",
-                "Inspect": "_navigation_element_inspect",
-                "Remove": "_navigation_element_remove"
+                "Remove": "_navigation_element_remove",
+                "div1": "divider",
+                "Inspect": "_navigation_element_inspect"
             }
         },
-        "Options": {
+        "About": {
             "type": "link",
             "side": "right",
-            "eventKey": "_navigation_options",
+            "eventKey": "_navigation_about",
             "href": "#"
         }
     }

@@ -158,7 +158,7 @@ class App extends Component
                     }} />
                 </InputGroup>
                 <InputGroup style={{ boxShadow: "none" }}>
-                    <InputGroup.Addon style={{ paddingLeft: 13, paddingRight: 13, borderRadius: 0, }}>r</InputGroup.Addon>
+                    <InputGroup.Addon style={{ borderRadius: 0, }}>r</InputGroup.Addon>
                     <FormControl type="number" value={element.Object.Vertices[int].R} onChange={(event) =>
                     {
                         element.Object.Vertices[int].R = event.target.value;  
@@ -167,7 +167,7 @@ class App extends Component
                             SelectedElement: this.state.SelectedElement
                         });                  
                     }} />
-                    <InputGroup.Addon style={{ paddingLeft: 12, paddingRight: 11 }}>g</InputGroup.Addon>
+                    <InputGroup.Addon style={{ }}>g</InputGroup.Addon>
                     <FormControl type="number" value={element.Object.Vertices[int].G} onChange={(event) =>
                     {
                         element.Object.Vertices[int].G = event.target.value;  
@@ -176,7 +176,7 @@ class App extends Component
                             SelectedElement: this.state.SelectedElement
                         });                  
                     }} />
-                    <InputGroup.Addon style={{ paddingLeft: 12, paddingRight: 11 }}>b</InputGroup.Addon>
+                    <InputGroup.Addon style={{ }}>b</InputGroup.Addon>
                     <FormControl style={{ borderRadius: 0 }} type="number" value={element.Object.Vertices[int].B} onChange={(event) =>
                     {
                         element.Object.Vertices[int].B = event.target.value;  
@@ -187,7 +187,7 @@ class App extends Component
                     }} />
                 </InputGroup>
                 <InputGroup.Button>
-                    <Button style={{ height: 68, paddingTop: "60%" }} href="#" bsStyle="danger" onClick={(event) =>
+                    <Button style={{ height: 92, paddingTop: "80%" }} href="#" bsStyle="danger" onClick={(event) =>
                     {
                         element.Object.Vertices.splice(int, 1);  
                         window.dispatchEvent(new CustomEvent("_event_rebuild_element_", { detail: {element: element} }));                      
@@ -662,7 +662,7 @@ class App extends Component
             position: "fixed",
             top: this.state.NavigationHeight,
             width: "100%",
-            height: window.innerHeight - this.state.NavigationHeight - this.state.BreadHeight,
+            height: window.innerHeight - this.state.NavigationHeight - this.state.BreadHeight + this.state.BreadHeight,
             border: 0,
             padding: 0,
             margin: 0
@@ -785,7 +785,7 @@ class App extends Component
                     </Navbar.Header>
                     {this.NavigationCollapse()}
                 </Navbar>
-                <Well bsSize="small" style={{ position: "fixed", top: window.innerHeight - this.state.BreadHeight, width: "100%", borderRadius: 0, boxShadow: "none", textAlign: "right" }} ref={(e) => this.BreadBar = e}>
+                <Well bsSize="small" style={{ position: "fixed", height: 0, top: window.innerHeight - this.state.BreadHeight + this.state.BreadHeight, width: "100%", borderRadius: 0, boxShadow: "none", textAlign: "right" }} ref={(e) => this.BreadBar = e}>
                     <div style={{ display: "inline", position: "relative", right: 10 }}>
                         {this.state.Camera}
                     </div>

@@ -358,6 +358,10 @@ function _event_onNavigationSelect(event)
         url += "?graph=" + JSON.stringify(graph.ToJson());
         alert(url);
     }
+    else if (navigation === "_navigation_about")
+    {
+        alert("Graph Workbench by Shivan Modha");
+    }
 }
 function _event_onMouseDown(event)
 {
