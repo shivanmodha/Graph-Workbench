@@ -191,8 +191,10 @@ let Graph = class Graph
     }
     ToJson()
     {
-        let js = {};
-        js["nodes"] = [];
+        let js = {
+            "nodes": [],
+            "maxid": nID
+        };
         for (let i = 0; i < this.Nodes.length; i++)
         {
             let child = {
@@ -248,12 +250,11 @@ let Graph = class Graph
             }
             js["elements"].push(child);
         }
-        console.log(JSON.stringify(js));
         return js;
     }
     FromJson(ME, js)
     {
-        console.log(js);
+        nID = js["maxid"];
         for (let i = 0; i < js["nodes"].length; i++)
         {
             let n = new Node(js["nodes"][i]["name"], new Vertex(js["nodes"][i]["location"]["x"], js["nodes"][i]["location"]["y"], js["nodes"][i]["location"]["z"]));
@@ -290,7 +291,6 @@ let Graph = class Graph
                 let c = js["elements"][i]["indices"][j];
                 ind.push(new Index(c[0], c[1], c[2]));
             }
-            console.log(v);
             let n = new Element(new Object3D(ME, v, ind, "New Object"), js["elements"][i]["name"], js["elements"][i]["type"]);
             if (js["elements"][i]["node"] != null)
             {

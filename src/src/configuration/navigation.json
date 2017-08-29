@@ -11,20 +11,7 @@
                 "Open": "_navigation_file_open",
                 "Save": "_navigation_file_save",
                 "div1": "divider",
-                "Clear": "_navigation_file_clear",
-                "Revert": "_navigation_file_revert"
-            }
-        },
-        "Export": {
-            "type": "dropdown",
-            "side": "left",
-            "eventKey": "_navigation_export",
-            "id": "nav-export-dropdown",
-            "children": {
-                "Nodes": "_navigation_export_nodes",
-                "Elements": "_navigation_export_elements",
-                "div1": "divider",
-                "All": "_navigation_export_all"
+                "Get Link": "_navigation_file_link"
             }
         },
         "View": {
@@ -41,7 +28,7 @@
         },
         "Path": {
             "type": "dropdown",
-            "side": "right",
+            "side": "left",
             "eventKey": "_navigation_path",
             "id": "nav-path-dropdown",
             "children": {

@@ -197,7 +197,6 @@ function _event_onNodeSelect(event, nIndex)
     }
     if (bindtonode)
     {
-        console.log("TEST");
         selectedNode = event;
         selectedNode.Selected = true;
         selectedNodeIndex = nIndex;
@@ -318,9 +317,46 @@ function _event_onNavigationSelect(event)
             graph.GetPath(start, end);
         }
     }
+    else if (navigation === "_navigation_file_new")
+    {
+        graph = new Graph();
+    }    
     else if (navigation === "_navigation_file_save")
     {
-        graph.ToJson();
+        let file = new Blob([JSON.stringify(graph.ToJson())], { type: "text/plain" });
+        let a = document.createElement("a");
+        a.href = URL.createObjectURL(file);
+        a.download = "graph.gbench";
+        a.click();
+    }
+    else if (navigation === "_navigation_file_open")
+    {
+        let input = document.createElement("input");
+        input.setAttribute("type", "file");
+        input.click();
+        input.onchange = (e) =>
+        {
+            let reader = new FileReader();
+            reader.onload = () =>
+            {
+                try
+                {
+                    graph.FromJson(ME, JSON.parse(reader.result));
+                }
+                catch (e)
+                {
+                    
+                }
+            }
+            reader.readAsText(input.files[0]);
+        }
+    }
+    else if (navigation === "_navigation_file_link")
+    {
+        let url = window.location;
+        url += "@" + round(ME.Camera.Location.X, 2) + "," + round(ME.Camera.Location.Y, 2) + "," + round(ME.Camera.Location.Z, 2) + "z" + ((RenderedFloor / 2) + 1);
+        url += "?graph=" + JSON.stringify(graph.ToJson());
+        alert(url);
     }
 }
 function _event_onMouseDown(event)

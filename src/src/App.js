@@ -383,7 +383,7 @@ class App extends Component
         };
         if (eventKey === "_navigation_node_bulkcreate")
         {
-            let prompt = window.prompt("Shivan", 5);
+            let prompt = window.prompt("How many nodes do you want to create?", 5);
             let num = 5;
             if (prompt == null || prompt == "")
             {
@@ -457,7 +457,6 @@ class App extends Component
     }
     _event_onSignalBind(event)
     {
-        console.log("came back");
         this.state.SelectedElement.BindToNode(event.detail.node);
         this.setState({
             Element_Properties: true
