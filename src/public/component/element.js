@@ -189,6 +189,122 @@ let Graph = class Graph
             ME.Device2D.strokeStyle = '#000000';
         }
     }
+    ToJson()
+    {
+        let js = {};
+        js["nodes"] = [];
+        for (let i = 0; i < this.Nodes.length; i++)
+        {
+            let child = {
+                "name": this.Nodes[i].Name,
+                "id": this.Nodes[i].ID,                
+                "location": {
+                    "x": this.Nodes[i].Location.X,
+                    "y": this.Nodes[i].Location.Y,
+                    "z": this.Nodes[i].Location.Z
+                },
+                "enabled": this.Nodes[i].Enabled,
+                "neighbors": []
+            };
+            for (let j = 0; j < this.Nodes[i].Neighbors.length; j++)
+            {
+                child["neighbors"].push({
+                    "distance": this.Nodes[i].Neighbors[j].Distance,
+                    "end": this.Nodes[i].Neighbors[j].EndNode.ID,
+                });              
+            }
+            js["nodes"].push(child);
+        }
+        js["elements"] = [];
+        for (let i = 0; i < this.Elements.length; i++)
+        {
+            let id = null;
+            if (this.Elements[i].Node)
+            {
+                id = this.Elements[i].Node.ID;
+            }
+            let child = {
+                "name": this.Elements[i].Name,
+                "type": this.Elements[i].Type,
+                "node": id,
+                "vertices": [],
+                "indices": []
+            }
+            for (let j = 0; j < this.Elements[i].Object.Vertices.length; j++)
+            {
+                child["vertices"].push([
+                    this.Elements[i].Object.Vertices[j].X,
+                    this.Elements[i].Object.Vertices[j].Y,
+                    this.Elements[i].Object.Vertices[j].Z,
+                    this.Elements[i].Object.Vertices[j].R,
+                    this.Elements[i].Object.Vertices[j].G,
+                    this.Elements[i].Object.Vertices[j].B,
+                    this.Elements[i].Object.Vertices[j].A,                 
+                ]);
+            }
+            for (let j = 0; j < this.Elements[i].Object.Indices.length; j++)
+            {
+                child["indices"].push(this.Elements[i].Object.Indices[j].indices);
+            }
+            js["elements"].push(child);
+        }
+        console.log(JSON.stringify(js));
+        return js;
+    }
+    FromJson(ME, js)
+    {
+        console.log(js);
+        for (let i = 0; i < js["nodes"].length; i++)
+        {
+            let n = new Node(js["nodes"][i]["name"], new Vertex(js["nodes"][i]["location"]["x"], js["nodes"][i]["location"]["y"], js["nodes"][i]["location"]["z"]));
+            n.ID = js["nodes"][i]["id"];
+            n.Enabled = js["nodes"][i]["enabled"];
+            this.Nodes.push(n);
+        }
+        for (let i = 0; i < this.Nodes.length; i++)
+        {
+            let n = this.Nodes[i];
+            for (let j = 0; j < js["nodes"][i]["neighbors"].length; j++)
+            {
+                for (let k = 0; k < this.Nodes.length; k++)
+                {
+                    if (this.Nodes[k].ID === js["nodes"][i]["neighbors"][j]["end"])
+                    {
+                        n.Neighbors.push(new Neighbor(this.Nodes[k], js["nodes"][i]["neighbors"][j]["distance"]));
+                        break;
+                    }
+                }
+            }
+        }
+        for (let i = 0; i < js["elements"].length; i++)
+        {
+            let v = [];
+            for (let j = 0; j < js["elements"][i]["vertices"].length; j++)
+            {
+                let c = js["elements"][i]["vertices"][j];
+                v.push(new GraphicsVertex(c[0], c[1], c[2], c[3], c[4], c[5], c[6]));
+            }    
+            let ind = [];
+            for (let j = 0; j < js["elements"][i]["indices"].length; j++)
+            {
+                let c = js["elements"][i]["indices"][j];
+                ind.push(new Index(c[0], c[1], c[2]));
+            }
+            console.log(v);
+            let n = new Element(new Object3D(ME, v, ind, "New Object"), js["elements"][i]["name"], js["elements"][i]["type"]);
+            if (js["elements"][i]["node"] != null)
+            {
+                for (let k = 0; k < this.Nodes.length; k++)
+                {
+                    if (this.Nodes[k].ID === js["elements"][i]["node"])
+                    {
+                        n.BindToNode(this.Nodes[k]);
+                    }
+                }                    
+            }
+            this.Elements.push(n);
+        }
+    }
 }
 let nID = 0;
 let Node = class Node

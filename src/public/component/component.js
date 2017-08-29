@@ -23,8 +23,11 @@ let bindtonode = false;
 let start = null;
 let end = null;
 
+let json;
+
 function Main()
 {
+    graph = new Graph();
     url = ParseURL();
     RC3 = document.getElementById("studios.vanish.component.3D");
     RC2 = document.getElementById("studios.vanish.component.2D");
@@ -62,7 +65,9 @@ function Main()
 function UpdateURL()
 {
     let url = "@" + round(ME.Camera.Location.X, 2) + "," + round(ME.Camera.Location.Y, 2) + "," + round(ME.Camera.Location.Z, 2) + "z" + ((RenderedFloor / 2) + 1);
-    window.dispatchEvent(new CustomEvent("_event_onURLChange", { detail: { camera: round(ME.Camera.Location.X, 2) + ", " + round(ME.Camera.Location.Y, 2) + ", " + round(ME.Camera.Location.Z, 2)}}));
+    //url += "?graph=" + JSON.stringify(graph.ToJson());
+    
+    window.dispatchEvent(new CustomEvent("_event_onURLChange", { detail: { camera: round(ME.Camera.Location.X, 2) + ", " + round(ME.Camera.Location.Y, 2) + ", " + round(ME.Camera.Location.Z, 2) } }));
     window.history.replaceState({ "html": url }, "", url)
 }
 function round(num, p)
@@ -75,6 +80,10 @@ function ParseURL()
     if (url.includes("@"))
     {
         let paramstr = url.substring(url.indexOf("@") + 1);
+        if (paramstr.includes("?"))
+        {
+            paramstr = paramstr.substring(0, url.indexOf("?"));
+        }
         while (paramstr.includes(","))
         {
             param.push(paramstr.substring(0, paramstr.indexOf(",")));
@@ -101,6 +110,7 @@ function ParseURL()
         RenderedFloor = 0;
     }
     let url_search = new URL(url);
+    json = url_search.searchParams.get("graph");
     url = url.substring(url.indexOf("/") + 1);
     if (url.includes("?")) url = url.substring(0, url.indexOf("?"));
     if (url.endsWith("/")) url = url.substring(0, url.length - 1);
@@ -112,7 +122,10 @@ function ParseURL()
 }
 function Initialize()
 {
-    graph = new Graph();
+    if (json)
+    {
+        graph.FromJson(ME, JSON.parse(json));
+    }    
 }
 function _event_onKeyPress(event)
 {
@@ -305,6 +318,10 @@ function _event_onNavigationSelect(event)
             graph.GetPath(start, end);
         }
     }
+    else if (navigation === "_navigation_file_save")
+    {
+        graph.ToJson();
+    }
 }
 function _event_onMouseDown(event)
 {
@@ -384,6 +401,7 @@ function _event_modal_onOk(event)
             _event_onNavigationSelect({ detail: { key: "_navigation_node_bulkcreate", number: bulkcreate-- } });
         }, 1);
     }
+    UpdateURL();
 }
 function _event_modal_onDelete(event)
 {
@@ -398,6 +416,7 @@ function _event_modal_onDelete(event)
     }
     selectedNode = null;
     selectedNodeIndex = -1;
+    UpdateURL();
 }
 function _event_modal_onCreateNeighbor(event)
 {
@@ -445,6 +464,7 @@ function _event_modal_onElementExecuteIndex(event)
 }
 function _event_modal_onElementDelete(event)
 {    
+    UpdateURL();
     for (let i = 0; i < graph.Elements.length; i++)
     {
         if (graph.Elements[i].Node === selectedNode)
@@ -500,5 +520,4 @@ function Render()
         ME.Device2D.lineTo(MousePosition.X, MousePosition.Y);
         ME.Device2D.stroke();
     }
-    //g.Render(ME, 0);
 }
