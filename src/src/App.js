@@ -21,6 +21,7 @@ class App extends Component
         this._event_onSignalProperties = this._event_onSignalProperties.bind(this);
         this._event_onSignalNeighbor = this._event_onSignalNeighbor.bind(this);
         this._event_onURLChange = this._event_onURLChange.bind(this);
+        this._event_onSignalElements = this._event_onSignalElements.bind(this);
         this._event_modal_onNameChanged = this._event_modal_onNameChanged.bind(this);
         this._event_modal_onIDChanged = this._event_modal_onIDChanged.bind(this);
         this._event_modal_onLocationX = this._event_modal_onLocationX.bind(this);
@@ -31,11 +32,23 @@ class App extends Component
         this._event_modal_onCreateNeighbor = this._event_modal_onCreateNeighbor.bind(this);
         this._event_modal_onDeleteNeighbor = this._event_modal_onDeleteNeighbor.bind(this);
         this._event_modal_onIsolateNeighbors = this._event_modal_onIsolateNeighbors.bind(this);
+        this._event_modal_onElementNameChange = this._event_modal_onElementNameChange.bind(this);
+        this._event_modal_onElementTypeChange = this._event_modal_onElementTypeChange.bind(this);
+        this._event_modal_onElementAddVertex = this._event_modal_onElementAddVertex.bind(this);
+        this._event_modal_onElementAddIndex = this._event_modal_onElementAddIndex.bind(this);
+        this._event_modal_onElementCodeMode = this._event_modal_onElementCodeMode.bind(this);
         this.CreateNeighbor = this.CreateNeighbor.bind(this);
         this.CreateNeighbors = this.CreateNeighbors.bind(this);
+        this.CreateVertex = this.CreateVertex.bind(this);
+        this.CreateVertices = this.CreateVertices.bind(this);
+        this.CreateVerticesContainer = this.CreateVerticesContainer.bind(this);
+        this.CreateIndex = this.CreateIndex.bind(this);
+        this.CreateIndices = this.CreateIndices.bind(this);
+        this.CreateIndicesContainer = this.CreateIndicesContainer.bind(this);
         window.addEventListener("_event_onSignalProperties", this._event_onSignalProperties);
         window.addEventListener("_event_onSignalNeighbor", this._event_onSignalNeighbor);
         window.addEventListener("_event_onURLChange", this._event_onURLChange);
+        window.addEventListener("_event_onSignalElements", this._event_onSignalElements);
     }
     componentWillMount()
     {
@@ -44,7 +57,10 @@ class App extends Component
             BreadHeight: 0,
             Properties: false,
             SelectedNode: null,
-            Camera: "0, 0, 0"
+            Camera: "0, 0, 0",
+            Element_Properties: false,
+            SelectedElement: null,
+            Element_CodeCreate: false
         });
     }
     componentDidMount()
@@ -72,7 +88,7 @@ class App extends Component
     }
     CreateNeighbor(int, node)
     {
-        return (            
+        return (
             <InputGroup style={{ paddingBottom: 10 }}>
                 <InputGroup.Addon>{int + 1}</InputGroup.Addon>
                 <FormControl type="text" value={"pathTo={" + node.Neighbors[int].EndNode.ID + ", " + node.Neighbors[int].EndNode.Name + "}, distance={" + node.Neighbors[int].Distance + "}"} readOnly />
@@ -101,6 +117,227 @@ class App extends Component
         else
         {
             return (<p style={{ paddingTop: 10 }}>Looks like this node is a bit lonely. Add a neighbor association by clicking on the {"\""}+{"\""} button below and selecting another node.</p>)
+        }
+    }
+    CreateVertex(int, element)
+    {
+        return (
+            <InputGroup style={{ paddingBottom: 10 }}>
+                <InputGroup.Addon>{int}</InputGroup.Addon>
+                <InputGroup style={{ boxShadow: "none" }}>
+                    <InputGroup.Addon style={{ borderRadius: 0 }}>x</InputGroup.Addon>
+                    <FormControl type="number" value={element.Object.Vertices[int].X} onChange={(event) =>
+                    {
+                        element.Object.Vertices[int].X = event.target.value;
+                        window.dispatchEvent(new CustomEvent("_event_rebuild_element_", { detail: {element: element} }));
+                        this.setState({
+                            SelectedElement: this.state.SelectedElement
+                        });
+                    }} />
+                    <InputGroup.Addon>y</InputGroup.Addon>
+                    <FormControl type="number" value={element.Object.Vertices[int].Y} onChange={(event) =>
+                    {
+                        element.Object.Vertices[int].Y = event.target.value;
+                        window.dispatchEvent(new CustomEvent("_event_rebuild_element_", { detail: {element: element} }));
+                        this.setState({
+                            SelectedElement: this.state.SelectedElement
+                        });
+                    }} />
+                    <InputGroup.Addon>z</InputGroup.Addon>
+                    <FormControl style={{ borderRadius: 0 }} type="number" value={element.Object.Vertices[int].Z} onChange={(event) =>
+                    {
+                        element.Object.Vertices[int].Z = event.target.value;
+                        window.dispatchEvent(new CustomEvent("_event_rebuild_element_", { detail: {element: element} }));
+                        this.setState({
+                            SelectedElement: this.state.SelectedElement
+                        });
+                    }} />
+                </InputGroup>
+                <InputGroup style={{ boxShadow: "none" }}>
+                    <InputGroup.Addon style={{ paddingLeft: 13, paddingRight: 13, borderRadius: 0, }}>r</InputGroup.Addon>
+                    <FormControl type="number" value={element.Object.Vertices[int].R} onChange={(event) =>
+                    {
+                        element.Object.Vertices[int].R = event.target.value;  
+                        window.dispatchEvent(new CustomEvent("_event_rebuild_element_", { detail: {element: element} }));                      
+                        this.setState({
+                            SelectedElement: this.state.SelectedElement
+                        });                  
+                    }} />
+                    <InputGroup.Addon style={{ paddingLeft: 12, paddingRight: 11 }}>g</InputGroup.Addon>
+                    <FormControl type="number" value={element.Object.Vertices[int].G} onChange={(event) =>
+                    {
+                        element.Object.Vertices[int].G = event.target.value;  
+                        window.dispatchEvent(new CustomEvent("_event_rebuild_element_", { detail: {element: element} }));                      
+                        this.setState({
+                            SelectedElement: this.state.SelectedElement
+                        });                  
+                    }} />
+                    <InputGroup.Addon style={{ paddingLeft: 12, paddingRight: 11 }}>b</InputGroup.Addon>
+                    <FormControl style={{ borderRadius: 0 }} type="number" value={element.Object.Vertices[int].B} onChange={(event) =>
+                    {
+                        element.Object.Vertices[int].B = event.target.value;  
+                        window.dispatchEvent(new CustomEvent("_event_rebuild_element_", { detail: {element: element} }));                      
+                        this.setState({
+                            SelectedElement: this.state.SelectedElement
+                        });                  
+                    }} />
+                </InputGroup>
+                <InputGroup.Button>
+                    <Button style={{ height: 68, paddingTop: "60%" }} href="#" bsStyle="danger" onClick={(event) =>
+                    {
+                        element.Object.Vertices.splice(int, 1);  
+                        window.dispatchEvent(new CustomEvent("_event_rebuild_element_", { detail: {element: element} }));                      
+                        this.setState({
+                            SelectedElement: this.state.SelectedElement
+                        });                  
+                    }}><Glyphicon glyph="minus" /></Button>
+                </InputGroup.Button>
+            </InputGroup>
+        )
+    }
+    CreateVertices()
+    {
+        if (this.state.Element_Properties && this.state.SelectedElement.Object.Vertices.length > 0)
+        {
+            let element = this.state.SelectedElement;
+            let itms = [];
+            for (let i = 0; i < element.Object.Vertices.length; i++)
+            {
+                itms.push(this.CreateVertex(i, element));
+            }
+            return (
+                <div>
+                    {itms}
+                </div>
+            )
+        }
+        else
+        {
+            return (<p>No Vertices</p>)
+        }
+    }
+    CreateVerticesContainer()
+    { 
+        if (!this.state.Element_CodeCreate)
+        {
+            return (
+                <div>
+                    {this.CreateVertices()}
+                    <div style={{ textAlign: "right", paddingTop: 0 }}>
+                        <ButtonGroup>
+                            <Button href="#" onClick={null}>Clear</Button>
+                            <Button href="#" onClick={null}>Create</Button>
+                            <Button href="#" bsStyle="success" onClick={this._event_modal_onElementAddVertex}><Glyphicon glyph="plus" /></Button>
+                        </ButtonGroup>
+                    </div >
+                </div>
+            );
+        }
+        else
+        {
+            return (
+                <FormControl style={{ resize: "vertical", height: 200, fontFamily: "monospace" }} componentClass="textarea" type="text" value={this.state.Element_Vertex_Code} placeholder="vertex code here" onChange={(event) =>
+                {
+                    window.dispatchEvent(new CustomEvent("_event_element_executevertexcode_", { detail: { element: this.state.SelectedElement, code: event.target.value } }));
+                    this.setState({
+                        Element_Vertex_Code: event.target.value
+                    });
+                }} />
+            );
+        }
+    }
+    CreateIndex(int, element)
+    {
+        return (
+            <InputGroup style={{ paddingBottom: 10 }}>
+                <InputGroup.Addon>index 01</InputGroup.Addon>
+                <FormControl type="number" value={element.Object.Indices[int].indices[0]} placeholder={""} onChange={(event) =>
+                {
+                    element.Object.Indices[int].indices[0] = event.target.value;  
+                    window.dispatchEvent(new CustomEvent("_event_rebuild_element_", { detail: {element: element} }));                      
+                    this.setState({
+                        SelectedElement: this.state.SelectedElement
+                    });                       
+                }} />
+                <InputGroup.Addon>index 02</InputGroup.Addon>
+                <FormControl type="number" value={element.Object.Indices[int].indices[1]} placeholder={""} onChange={(event) =>
+                {
+                    element.Object.Indices[int].indices[1] = event.target.value;  
+                    window.dispatchEvent(new CustomEvent("_event_rebuild_element_", { detail: {element: element} }));                      
+                    this.setState({
+                        SelectedElement: this.state.SelectedElement
+                    });                       
+                }} />
+                <InputGroup.Addon>index 03</InputGroup.Addon>
+                <FormControl type="number" value={element.Object.Indices[int].indices[2]} placeholder={""} onChange={(event) =>
+                {
+                    element.Object.Indices[int].indices[2] = event.target.value;  
+                    window.dispatchEvent(new CustomEvent("_event_rebuild_element_", { detail: {element: element} }));                      
+                    this.setState({
+                        SelectedElement: this.state.SelectedElement
+                    });                       
+                }} />
+                <InputGroup.Button>
+                    <Button href="#" bsStyle="danger" onClick={(event) =>
+                    {
+                        element.Object.Indices.splice(int, 1);  
+                        window.dispatchEvent(new CustomEvent("_event_rebuild_element_", { detail: {element: element} }));                      
+                        this.setState({
+                            SelectedElement: this.state.SelectedElement
+                        });   
+                    }}><Glyphicon glyph="minus" /></Button>
+                </InputGroup.Button>
+            </InputGroup>
+        )        
+    }
+    CreateIndices()
+    {
+        if (this.state.Element_Properties && this.state.SelectedElement.Object.Indices.length > 0)
+        {
+            let element = this.state.SelectedElement;
+            let itms = [];
+            for (let i = 0; i < element.Object.Indices.length; i++)
+            {
+                itms.push(this.CreateIndex(i, element));
+            }
+            return (
+                <div>
+                    {itms}
+                </div>
+            )
+        }
+        else
+        {
+            return (<p>No Indices</p>)
+        }
+    }
+    CreateIndicesContainer()
+    {        
+        if (!this.state.Element_CodeCreate)
+        {
+            return (
+                <div>
+                    {this.CreateIndices()}
+                    <div style={{ textAlign: "right", paddingTop: 0 }}>
+                        <ButtonGroup>
+                            <Button href="#" onClick={null}>Clear</Button>
+                            <Button href="#" bsStyle="success" onClick={this._event_modal_onElementAddIndex}><Glyphicon glyph="plus" /></Button>
+                        </ButtonGroup>
+                    </div >
+                </div>
+            );
+        }
+        else
+        {
+            return (
+                <FormControl style={{ resize: "vertical", height: 200, fontFamily: "monospace" }} componentClass="textarea" type="text" value={this.state.Element_Index_Code} placeholder="index code here" onChange={(event) =>
+                {
+                    window.dispatchEvent(new CustomEvent("_event_element_executeindexcode_", { detail: { element: this.state.SelectedElement, code: event.target.value } }));
+                    this.setState({
+                        Element_Index_Code: event.target.value
+                    });
+                }} />
+            );    
         }
     }
     NavigationCollapse()
@@ -175,6 +412,15 @@ class App extends Component
     {
         this.setState({
             Camera: event.detail.camera
+        });
+    }
+    _event_onSignalElements(event)
+    {
+        this.setState({
+            Element_Properties: true,
+            SelectedElement: event.detail.element,
+            SelectedElementOldName: event.detail.element.Name,
+            SelectedElementOldType: event.detail.element.Type
         });
     }
     _event_modal_onNameChanged(event)
@@ -265,6 +511,71 @@ class App extends Component
             this._event_modal_onDeleteNeighbor(0);
         }
     }
+    _event_modal_onElementNameChange(event)
+    {
+        this.state.SelectedElement.Name = event.target.value;
+        this.setState({
+            SelectedElement: this.state.SelectedElement
+        });
+    }
+    _event_modal_onElementTypeChange(event)
+    {
+        this.state.SelectedElement.Type = event.target.value;
+        this.setState({
+            SelectedElement: this.state.SelectedElement
+        });
+    }
+    _event_modal_onElementAddVertex(event)
+    {        
+        window.dispatchEvent(new CustomEvent("_event_element_addvertex_", { detail: { element: this.state.SelectedElement } }));
+        this.setState({
+            SelectedElement: this.state.SelectedElement
+        });
+    }
+    _event_modal_onElementAddIndex(event)
+    {  
+        window.dispatchEvent(new CustomEvent("_event_element_addindex_", { detail: { element: this.state.SelectedElement } }));
+        this.setState({
+            SelectedElement: this.state.SelectedElement
+        });
+    }
+    _event_modal_onElementCodeMode(event)
+    {
+        if (event.length > 1)
+        {
+            let vCode = "";
+            for (let i = 0; i < this.state.SelectedElement.Object.Vertices.length; i++)
+            {
+                let child = this.state.SelectedElement.Object.Vertices[i];
+                if (i > 0)
+                {
+                    vCode += ",\n";
+                }
+                vCode += "new GraphicsVertex(" + child.X + ", " + child.Y + ", " + child.Z + ", " + child.R + ", " + child.G + ", " + child.B + ", " + child.A + ")";
+            }
+            let iCode = "";
+            for (let i = 0; i < this.state.SelectedElement.Object.Indices.length; i++)
+            {
+                let child = this.state.SelectedElement.Object.Indices[i];
+                if (i > 0)
+                {
+                    iCode += ",\n";
+                }
+                iCode += "new Index(" + child.indices[0] + ", " + child.indices[1] + ", " + child.indices[2] + ")";
+            }
+            this.setState({
+                Element_CodeCreate: true,
+                Element_Vertex_Code: vCode,
+                Element_Index_Code: iCode
+            });
+        }
+        else
+        {
+            this.setState({
+                Element_CodeCreate: false,
+            });            
+        }
+    }
     updateSize()
     {
         this._event_onResize();
@@ -338,6 +649,55 @@ class App extends Component
             node_location_y = this.state.SelectedNode.Location.Y;
             node_location_z = this.state.SelectedNode.Location.Z;
         }
+        let element_name = "";
+        let element_name_old = "";
+        let element_type = "";
+        let element_type_old = "";
+        let element_node_id = "";
+        let element_node_name = "";
+        let element_node_location = "";
+        if (this.state.SelectedElement)
+        {
+            element_name_old = this.state.SelectedElementOldName;
+            element_type_old = this.state.SelectedElementOldType;
+            if (this.state.SelectedElement.Name === this.state.SelectedElementOldName)
+            {
+                element_name = "";
+            }
+            else if (this.state.SelectedElement.Name === "")
+            {
+                element_name = "";
+                this.state.SelectedElement.Name = this.state.SelectedElementOldName;
+            }
+            else
+            {
+                element_name = this.state.SelectedElement.Name;
+            }
+            if (this.state.SelectedElement.Type === this.state.SelectedElementOldType)
+            {
+                element_type = "";
+            }
+            else if (this.state.SelectedElement.Type === "")
+            {
+                element_type = "";
+                this.state.SelectedElement.Type = this.state.SelectedElementOldType;
+            }
+            else
+            {
+                element_type = this.state.SelectedElement.Type;
+            }
+            if (this.state.SelectedElement.Node)
+            {
+                element_node_id = this.state.SelectedElement.Node.ID;
+                element_node_name = this.state.SelectedElement.Node.Name;
+                element_node_location = "(" + this.state.SelectedElement.Node.Location.X + ", " + this.state.SelectedElement.Node.Location.Y + ", " + this.state.SelectedElement.Node.Location.Z + ")";
+            }
+        }
+        let tbgdefault = 0;
+        if (this.state.Element_CodeCreate)
+        {
+            tbgdefault = 1;
+        }
         return (
             <div>
                 <Navbar fluid style={{ position: "fixed", top: 0 }} ref={(e) => this.NavigationBar = e} fixedTop>
@@ -355,7 +715,7 @@ class App extends Component
                     <canvas id="studios.vanish.component.3D" style={this.GetStyle()}></canvas>
                     <canvas id="studios.vanish.component.2D" style={this.GetStyle()}></canvas>
                 </div>
-                <Modal bsSize="large" show={false}>
+                <Modal bsSize="large" show={this.state.Element_Properties}>
                     <Modal.Header closeButton>
                             <Modal.Title>Element Properties</Modal.Title>
                     </Modal.Header>
@@ -369,9 +729,9 @@ class App extends Component
                                 <Col sm={10}>
                                     <InputGroup>
                                         <InputGroup.Addon>name</InputGroup.Addon>
-                                        <FormControl type="text" value={""} placeholder={"name"} onChange={null} />
+                                        <FormControl type="text" value={element_name} placeholder={element_name_old} onChange={this._event_modal_onElementNameChange} />
                                         <InputGroup.Addon>type</InputGroup.Addon>
-                                        <FormControl type="text" value={""} placeholder={"type"} onChange={null} />
+                                        <FormControl type="text" value={element_type} placeholder={element_type_old} onChange={this._event_modal_onElementTypeChange} />
                                     </InputGroup>
                                 </Col>
                             </FormGroup>
@@ -381,49 +741,33 @@ class App extends Component
                                 </Col>
                                 <Col sm={10}>
                                     <InputGroup>
+                                        <InputGroup.Addon>id</InputGroup.Addon>
+                                        <FormControl type="text" value={element_node_id} placeholder={"bind"} onChange={null} readOnly />
                                         <InputGroup.Addon>name</InputGroup.Addon>
-                                        <FormControl type="text" value={""} placeholder={"name"} onChange={null} />
-                                        <InputGroup.Addon>type</InputGroup.Addon>
-                                        <FormControl type="text" value={""} placeholder={"type"} onChange={null} />
+                                        <FormControl type="text" value={element_node_name} placeholder={"to"} onChange={null} readOnly />
+                                        <InputGroup.Addon>location</InputGroup.Addon>
+                                        <FormControl type="text" value={element_node_location} placeholder={"node!"} onChange={null} readOnly />
                                     </InputGroup>
+                                    <div style={{ textAlign: "right", paddingTop: 10 }}>
+                                        <ButtonGroup>
+                                            <Button href="#" onClick={null}>Bind To Node</Button>
+                                        </ButtonGroup>
+                                    </div>
                                 </Col>
                             </FormGroup>
                             <FormGroup style={{ height: 1, backgroundColor: "rgba(10, 10, 10, 0.10)" }}></FormGroup>
                             <p>Object</p>
+                            <div style={{ textAlign: "right", paddingBottom: 10 }}>
+                                <ToggleButtonGroup type="checkbox" defaultValue={tbgdefault} onChange={this._event_modal_onElementCodeMode}>
+                                    <ToggleButton value={1}>Code Mode</ToggleButton>
+                                </ToggleButtonGroup>
+                            </div>
                             <FormGroup>
                                 <Col sm={2} style={{ textAlign: "right", paddingTop: 5 }}>
                                     Vertices
                                 </Col>
                                 <Col sm={10}>
-                                    <InputGroup style={{ paddingBottom: 10 }}>
-                                        <InputGroup.Addon>01</InputGroup.Addon>
-                                        <InputGroup style={{ boxShadow: "none" }}>
-                                            <InputGroup.Addon style={{ borderRadius: 0 }}>x</InputGroup.Addon>
-                                            <FormControl type="text" value={""} placeholder={"0"} onChange={null} />
-                                            <InputGroup.Addon>y</InputGroup.Addon>
-                                            <FormControl type="text" value={""} placeholder={"0"} onChange={null} />
-                                            <InputGroup.Addon>z</InputGroup.Addon>
-                                            <FormControl style={{ borderRadius: 0 }} type="text" value={""} placeholder={"0"} onChange={null} />
-                                        </InputGroup>
-                                        <InputGroup style={{ boxShadow: "none" }}>
-                                            <InputGroup.Addon style={{ paddingLeft: 13, paddingRight: 13, borderRadius: 0, }}>r</InputGroup.Addon>
-                                            <FormControl type="text" value={""} placeholder={"0"} onChange={null} />
-                                            <InputGroup.Addon style={{ paddingLeft: 12, paddingRight: 11 }}>g</InputGroup.Addon>
-                                            <FormControl type="text" value={""} placeholder={"0"} onChange={null} />
-                                            <InputGroup.Addon style={{ paddingLeft: 12, paddingRight: 11 }}>b</InputGroup.Addon>
-                                            <FormControl style={{ borderRadius: 0 }} type="text" value={""} placeholder={"0"} onChange={null} />
-                                        </InputGroup>
-                                        <InputGroup.Button>
-                                            <Button style={{ height: 68, paddingTop: "60%" }} href="#" bsStyle="danger" onClick={null}><Glyphicon glyph="minus" /></Button>
-                                        </InputGroup.Button>
-                                    </InputGroup>
-                                    <div style={{ textAlign: "right", paddingTop: 0 }}>
-                                        <ButtonGroup>
-                                            <Button href="#" onClick={null}>Clear</Button>
-                                            <Button href="#" onClick={null}>Create</Button>
-                                            <Button href="#" bsStyle="success" onClick={null}><Glyphicon glyph="plus" /></Button>
-                                        </ButtonGroup>
-                                    </div>
+                                    {this.CreateVerticesContainer()}
                                 </Col>
                             </FormGroup>
                             <FormGroup>
@@ -431,23 +775,7 @@ class App extends Component
                                     Faces
                                 </Col>
                                 <Col sm={10}>
-                                    <InputGroup style={{ paddingBottom: 10 }}>
-                                        <InputGroup.Addon>index 01</InputGroup.Addon>
-                                        <FormControl type="text" value={""} placeholder={""} onChange={null} />
-                                        <InputGroup.Addon>index 02</InputGroup.Addon>
-                                        <FormControl type="text" value={""} placeholder={""} onChange={null} />
-                                        <InputGroup.Addon>index 03</InputGroup.Addon>
-                                        <FormControl type="text" value={""} placeholder={""} onChange={null} />
-                                        <InputGroup.Button>
-                                            <Button href="#" bsStyle="danger" onClick={null}><Glyphicon glyph="minus" /></Button>
-                                        </InputGroup.Button>
-                                    </InputGroup>
-                                    <div style={{ textAlign: "right", paddingTop: 0 }}>
-                                        <ButtonGroup>
-                                            <Button href="#" onClick={null}>Clear</Button>
-                                            <Button href="#" bsStyle="success" onClick={null}><Glyphicon glyph="plus" /></Button>
-                                        </ButtonGroup>
-                                    </div>
+                                    {this.CreateIndicesContainer()}    
                                 </Col>
                             </FormGroup>
                             <FormGroup style={{ height: 1, backgroundColor: "rgba(10, 10, 10, 0.10)" }}></FormGroup>
@@ -502,7 +830,7 @@ class App extends Component
                                     Neighbors
                                 </Col>
                                 <Col sm={10}>
-                                    {this.CreateNeighbors()}    
+                                    {this.CreateNeighbors()}
                                     <div style={{ textAlign: "right", paddingTop: 0 }}>
                                         <ButtonGroup>
                                             <Button href="#" onClick={this._event_modal_onIsolateNeighbors}>Isolate</Button>

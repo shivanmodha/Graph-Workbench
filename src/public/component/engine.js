@@ -253,12 +253,21 @@ var Object3D = class Object3D
 {
     constructor(engine, vert, inde, name)
     {
+        this.make(engine, vert, inde, name);
+    }
+    rebuild(engine)
+    {
+        this.make(engine, this.Vertices, this.Indices, this.name);
+    }
+    make(engine, vert, inde, name)
+    {
         this.name = name;
         var device = engine.Device;
         /**
          * Transpose the vertex objects to arrays
          */
         this.Vertices = vert;
+        this.Indices = inde;
         this.vertices = new Array(vert.length * 3);
         this.colors = new Array(vert.length * 4);
         this.indices = new Array(inde.length * 3);

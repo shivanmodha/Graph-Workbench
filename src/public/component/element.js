@@ -94,7 +94,10 @@ let Graph = class Graph
     {
         for (let i = 0; i < this.Elements.length; i++)
         {
-            this.Elements[i].Render(ME);
+            if (this.Elements[i].Node != null)
+            {
+                this.Elements[i].Render(ME);
+            }    
         }
         for (let i = 0; i < this.Nodes.length; i++)
         {
@@ -224,9 +227,12 @@ let Neighbor = class Neighbor
 }
 let Element = class Element
 {
-    constructor(_object)
+    constructor(_object, name, type)
     {
         this.Object = _object;
+        this.Name = name;
+        this.Type = type;
+        this.Node = null;
     }
     BindToNode(_node)
     {
@@ -234,6 +240,7 @@ let Element = class Element
     }
     Render(ME)
     {
+        this.Object.Location = this.Node.Location;
         this.Object.Render(ME);
     }
 }

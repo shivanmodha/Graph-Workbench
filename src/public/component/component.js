@@ -15,7 +15,7 @@ let graph;
 let selectedNode = null;
 let selectedNodeIndex = -1;
 
-let changeName = false;
+let inPropertyWindow = false;
 let bulkcreate = 0;
 let createNeighbor = false;
 
@@ -31,6 +31,11 @@ function Main()
     window.addEventListener("_event_modal_ok_", _event_modal_onOk);
     window.addEventListener("_event_modal_delete_", _event_modal_onDelete);
     window.addEventListener("_event_modal_createneighbor_", _event_modal_onCreateNeighbor);
+    window.addEventListener("_event_rebuild_element_", _event_modal_onElementRebuild);
+    window.addEventListener("_event_element_addvertex_", _event_modal_onElementVertexAdd);
+    window.addEventListener("_event_element_addindex_", _event_modal_onElementIndexAdd);
+    window.addEventListener("_event_element_executevertexcode_", _event_modal_onElementExecuteVertex);
+    window.addEventListener("_event_element_executeindexcode_", _event_modal_onElementExecuteIndex);
     RC2.addEventListener("mousedown", _event_onMouseDown);
     RC2.addEventListener("touchstart", _event_onTouchDown);
     RC2.addEventListener("mouseup", _event_onMouseUp);
@@ -104,57 +109,13 @@ function ParseURL()
 }
 function Initialize()
 {
-    let Vertices = [
-        new GraphicsVertex(-1.0, +1.0, +1.0, +1.0, +1.0, +1.0, +1.0),
-        new GraphicsVertex(+1.0, +1.0, +1.0, +1.0, +1.0, +1.0, +1.0),
-        new GraphicsVertex(+1.0, -1.0, +1.0, +1.0, +1.0, +1.0, +1.0),
-        new GraphicsVertex(-1.0, -1.0, +1.0, +1.0, +1.0, +1.0, +1.0),
-
-        new GraphicsVertex(-1.0, +1.0, -1.0, +1.0, +1.0, +1.0, +1.0),
-        new GraphicsVertex(+1.0, +1.0, -1.0, +1.0, +1.0, +1.0, +1.0),
-        new GraphicsVertex(+1.0, -1.0, -1.0, +1.0, +1.0, +1.0, +1.0),
-        new GraphicsVertex(-1.0, -1.0, -1.0, +1.0, +1.0, +1.0, +1.0),
-    ]
-    let Indices = [
-        new Index(0, 1, 2),
-        new Index(0, 2, 3),
-
-        new Index(4, 5, 6),
-        new Index(4, 6, 7)
-    ]
-    obj = new Object3D(ME, Vertices, Indices, "OBJ");
     graph = new Graph();
-
-    //let el = new Element(obj);
-    //graph.RegisterElement(el);
-
-    /*let el = new Element(obj);
-
-    g = new Graph();
-    let A = new Node("A", new Vertex(0, 3, 0));
-    let B = new Node("B", new Vertex(3, 0, 0));
-    let C = new Node("C", new Vertex(-3, 0, 0));
-    let D = new Node("D", new Vertex(0, -3, 0));
-    let E = new Node("E", new Vertex(0, 0, 0));
-    A.CreatePathTo(B, true);
-    A.CreatePathTo(C, true);
-    B.CreatePathTo(C, true);
-    B.CreatePathTo(D, true);
-    C.CreatePathTo(D, true);
-    //B.Selected = true;
-    g.RegisterNode(A);
-    g.RegisterNode(B);
-    g.RegisterNode(C);
-    g.RegisterNode(D);
-    g.RegisterNode(E);
-    g.RegisterElement(el);
-    //g.GetPath(A, D);*/
 }
 function _event_onKeyPress(event)
 {
     if (selectedNode)
     {
-        if (!changeName)
+        if (!inPropertyWindow)
         {
             let speed = 0.1;
             if (event.key === "ArrowUp")
@@ -184,7 +145,19 @@ function _event_onKeyPress(event)
             if (event.key === "i")
             {
                 window.dispatchEvent(new CustomEvent("_event_onSignalProperties", { detail: { node: selectedNode } }));
-                changeName = true;
+                inPropertyWindow = true;
+            }
+            if (event.key === "e")
+            {
+                for (let i = 0; i < graph.Elements.length; i++)
+                {
+                    if (graph.Elements[i].Node === selectedNode)
+                    {
+                        window.dispatchEvent(new CustomEvent("_event_onSignalElements", { detail: { element: graph.Elements[i] } }));
+                        inPropertyWindow = true;                        
+                        break;
+                    }
+                }
             }
         }
     }
@@ -212,7 +185,22 @@ function _event_onNavigationSelect(event)
     let navigation = event.detail.key;
     if (navigation === "_navigation_element_create")
     {
-
+        let Vertices = [
+            new GraphicsVertex(-1.0, +1.0, +0.0, +1.0, +1.0, +1.0, +1.0),
+            new GraphicsVertex(+1.0, +1.0, +0.0, +1.0, +1.0, +1.0, +1.0),
+            new GraphicsVertex(+1.0, -1.0, +0.0, +1.0, +1.0, +1.0, +1.0),
+            new GraphicsVertex(-1.0, -1.0, +0.0, +1.0, +1.0, +1.0, +1.0),
+        ]
+        let Indices = [
+            new Index(0, 1, 2),
+            new Index(0, 2, 3),
+        ]
+        obj = new Object3D(ME, Vertices, Indices, "New Object");
+        let N = new Element(obj, "New Element", "Generic");
+        N.BindToNode(selectedNode);
+        graph.RegisterElement(N);
+        window.dispatchEvent(new CustomEvent("_event_onSignalElements", { detail: { element: N } }));
+        inPropertyWindow = true;  
     }
     else if (navigation === "_navigation_node_create")
     {
@@ -226,7 +214,7 @@ function _event_onNavigationSelect(event)
         selectedNodeIndex = -1;
         _event_onNodeSelect(graph.Nodes[graph.Nodes.length - 1], graph.Nodes.length - 1);
         window.dispatchEvent(new CustomEvent("_event_onSignalProperties", { detail: { node: selectedNode } }));
-        changeName = true;
+        inPropertyWindow = true;
     }
     else if (navigation === "_navigation_node_bulkcreate")
     {
@@ -240,7 +228,7 @@ function _event_onNavigationSelect(event)
     else if (navigation === "_navigation_node_inspect")
     {
         window.dispatchEvent(new CustomEvent("_event_onSignalProperties", { detail: { node: selectedNode } }));
-        changeName = true;
+        inPropertyWindow = true;
     }
     else if (navigation === "_navigation_node_remove")
     {
@@ -353,7 +341,7 @@ function _event_onMouseWheel(event)
 }
 function _event_modal_onOk(event)
 {
-    changeName = false;
+    inPropertyWindow = false;
     if (bulkcreate > 0)
     {
         setTimeout(() =>
@@ -365,7 +353,7 @@ function _event_modal_onOk(event)
 function _event_modal_onDelete(event)
 {
     graph.Nodes.splice(selectedNodeIndex, 1);
-    changeName = false;
+    inPropertyWindow = false;
     if (bulkcreate > 0)
     {
         setTimeout(() =>
@@ -373,10 +361,52 @@ function _event_modal_onDelete(event)
             _event_onNavigationSelect({ detail: { key: "_navigation_node_bulkcreate", number: bulkcreate-- } });
         }, 1);
     }
+    selectedNode = null;
+    selectedNodeIndex = -1;
 }
 function _event_modal_onCreateNeighbor(event)
 {
     createNeighbor = true;
+}
+function _event_modal_onElementRebuild(event)
+{
+    event.detail.element.Object.rebuild(ME);
+}
+function _event_modal_onElementVertexAdd(event)
+{    
+    event.detail.element.Object.Vertices.push(new GraphicsVertex(0.0, 0.0, 0.0, 1.0, 1.0, 1.0, 1.0));
+    _event_modal_onElementRebuild(event);
+}
+function _event_modal_onElementIndexAdd(event)
+{    
+    event.detail.element.Object.Indices.push(new Index(0, 0, 0));
+    _event_modal_onElementRebuild(event);
+}
+function _event_modal_onElementExecuteVertex(event)
+{
+    let code = "[\n" + event.detail.code + "\n]";
+    try
+    {
+        event.detail.element.Object.Vertices = eval(code);
+        _event_modal_onElementRebuild(event);        
+    }
+    catch (e)
+    {
+        
+    }
+}
+function _event_modal_onElementExecuteIndex(event)
+{
+    let code = "[\n" + event.detail.code + "\n]";
+    try
+    {
+        event.detail.element.Object.Indices = eval(code);
+        _event_modal_onElementRebuild(event);        
+    }
+    catch (e)
+    {
+        
+    }    
 }
 function MainLoop()
 {
@@ -386,7 +416,6 @@ function MainLoop()
 }
 function Update()
 {
-    obj.Rotation.X += 1;
     if (MouseButton == 1)
     {
         DeltaMouse = new Point(PreviousMousePosition.X - MousePosition.X, PreviousMousePosition.Y - MousePosition.Y);
