@@ -71,9 +71,7 @@
             "children": {
                 "Create": "_navigation_element_create",
                 "Inspect": "_navigation_element_inspect",
-                "Remove": "_navigation_element_remove",
-                "div1": "divider",
-                "Bind to Node": "_navigation_element_bind"
+                "Remove": "_navigation_element_remove"
             }
         },
         "Options": {

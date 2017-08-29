@@ -253,6 +253,7 @@ var Object3D = class Object3D
 {
     constructor(engine, vert, inde, name)
     {
+        this.RenderMode = "Solid";
         this.make(engine, vert, inde, name);
     }
     rebuild(engine)
@@ -327,7 +328,6 @@ var Object3D = class Object3D
         this.Rotation = new Vertex(0, 0, 0);
         this.Scale = new Vertex(1, 1, 1);
 
-        this.RenderMode = "Solid";
         this.ShadeR = 1;
         this.ShadeG = 1;
         this.ShadeB = 1;

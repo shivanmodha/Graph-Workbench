@@ -22,6 +22,7 @@ class App extends Component
         this._event_onSignalNeighbor = this._event_onSignalNeighbor.bind(this);
         this._event_onURLChange = this._event_onURLChange.bind(this);
         this._event_onSignalElements = this._event_onSignalElements.bind(this);
+        this._event_onSignalBind = this._event_onSignalBind.bind(this);
         this._event_modal_onNameChanged = this._event_modal_onNameChanged.bind(this);
         this._event_modal_onIDChanged = this._event_modal_onIDChanged.bind(this);
         this._event_modal_onLocationX = this._event_modal_onLocationX.bind(this);
@@ -36,7 +37,9 @@ class App extends Component
         this._event_modal_onElementTypeChange = this._event_modal_onElementTypeChange.bind(this);
         this._event_modal_onElementAddVertex = this._event_modal_onElementAddVertex.bind(this);
         this._event_modal_onElementAddIndex = this._event_modal_onElementAddIndex.bind(this);
-        this._event_modal_onElementCodeMode = this._event_modal_onElementCodeMode.bind(this);
+        this._event_modal_onElementToggle = this._event_modal_onElementToggle.bind(this);
+        this._event_modal_onDeleteElement = this._event_modal_onDeleteElement.bind(this);
+        this._event_modal_onElementBind = this._event_modal_onElementBind.bind(this);
         this.CreateNeighbor = this.CreateNeighbor.bind(this);
         this.CreateNeighbors = this.CreateNeighbors.bind(this);
         this.CreateVertex = this.CreateVertex.bind(this);
@@ -49,6 +52,7 @@ class App extends Component
         window.addEventListener("_event_onSignalNeighbor", this._event_onSignalNeighbor);
         window.addEventListener("_event_onURLChange", this._event_onURLChange);
         window.addEventListener("_event_onSignalElements", this._event_onSignalElements);
+        window.addEventListener("_event_onSignalBind", this._event_onSignalBind);
     }
     componentWillMount()
     {
@@ -422,6 +426,42 @@ class App extends Component
             SelectedElementOldName: event.detail.element.Name,
             SelectedElementOldType: event.detail.element.Type
         });
+        if (this.state.Element_CodeCreate)
+        {
+            let vCode = "";
+            for (let i = 0; i < event.detail.element.Object.Vertices.length; i++)
+            {
+                let child = event.detail.element.Object.Vertices[i];
+                if (i > 0)
+                {
+                    vCode += ",\n";
+                }
+                vCode += "new GraphicsVertex(" + child.X + ", " + child.Y + ", " + child.Z + ", " + child.R + ", " + child.G + ", " + child.B + ", " + child.A + ")";
+            }
+            let iCode = "";
+            for (let i = 0; i < event.detail.element.Object.Indices.length; i++)
+            {
+                let child = event.detail.element.Object.Indices[i];
+                if (i > 0)
+                {
+                    iCode += ",\n";
+                }
+                iCode += "new Index(" + child.indices[0] + ", " + child.indices[1] + ", " + child.indices[2] + ")";
+            }
+            this.setState({
+                Element_CodeCreate: true,
+                Element_Vertex_Code: vCode,
+                Element_Index_Code: iCode
+            });
+        }
+    }
+    _event_onSignalBind(event)
+    {
+        console.log("came back");
+        this.state.SelectedElement.BindToNode(event.detail.node);
+        this.setState({
+            Element_Properties: true
+        });
     }
     _event_modal_onNameChanged(event)
     {
@@ -465,7 +505,11 @@ class App extends Component
             Properties: false,
             SelectedNode: null,
             SelectedNodeOldName: null,
-            SelectedNodeOldID: null
+            SelectedNodeOldID: null,
+            Element_Properties: false,
+            SelectedElement: null,
+            SelectedElementOldName: null,
+            SelectedElementOldID: null
         });
     }
     _event_modal_onDelete(event)
@@ -539,42 +583,74 @@ class App extends Component
             SelectedElement: this.state.SelectedElement
         });
     }
-    _event_modal_onElementCodeMode(event)
+    _event_modal_onElementToggle(event)
     {
-        if (event.length > 1)
+        let cm = false;
+        let wf = false;
+        for (let i = 0; i < event.length; i++)
         {
-            let vCode = "";
-            for (let i = 0; i < this.state.SelectedElement.Object.Vertices.length; i++)
+            if (event[i] === 1)
             {
-                let child = this.state.SelectedElement.Object.Vertices[i];
-                if (i > 0)
-                {
-                    vCode += ",\n";
-                }
-                vCode += "new GraphicsVertex(" + child.X + ", " + child.Y + ", " + child.Z + ", " + child.R + ", " + child.G + ", " + child.B + ", " + child.A + ")";
+                wf = true;
+                this.state.SelectedElement.Object.RenderMode = "WireFrame";
             }
-            let iCode = "";
-            for (let i = 0; i < this.state.SelectedElement.Object.Indices.length; i++)
+            else if (event[i] === 2)
             {
-                let child = this.state.SelectedElement.Object.Indices[i];
-                if (i > 0)
+                cm = true;
+                let vCode = "";
+                for (let i = 0; i < this.state.SelectedElement.Object.Vertices.length; i++)
                 {
-                    iCode += ",\n";
+                    let child = this.state.SelectedElement.Object.Vertices[i];
+                    if (i > 0)
+                    {
+                        vCode += ",\n";
+                    }
+                    vCode += "new GraphicsVertex(" + child.X + ", " + child.Y + ", " + child.Z + ", " + child.R + ", " + child.G + ", " + child.B + ", " + child.A + ")";
                 }
-                iCode += "new Index(" + child.indices[0] + ", " + child.indices[1] + ", " + child.indices[2] + ")";
+                let iCode = "";
+                for (let i = 0; i < this.state.SelectedElement.Object.Indices.length; i++)
+                {
+                    let child = this.state.SelectedElement.Object.Indices[i];
+                    if (i > 0)
+                    {
+                        iCode += ",\n";
+                    }
+                    iCode += "new Index(" + child.indices[0] + ", " + child.indices[1] + ", " + child.indices[2] + ")";
+                }
+                this.setState({
+                    Element_CodeCreate: true,
+                    Element_Vertex_Code: vCode,
+                    Element_Index_Code: iCode
+                });                
             }
-            this.setState({
-                Element_CodeCreate: true,
-                Element_Vertex_Code: vCode,
-                Element_Index_Code: iCode
-            });
         }
-        else
+        if (!wf)
+        {
+            this.state.SelectedElement.Object.RenderMode = "Solid";            
+        }
+        if (!cm)
         {
             this.setState({
                 Element_CodeCreate: false,
-            });            
-        }
+            });
+        }   
+    }
+    _event_modal_onDeleteElement(event)
+    {
+        window.dispatchEvent(new CustomEvent("_event_modal_element_delete_", { detail: {} }));
+        this.setState({
+            Element_Properties: false,
+            SelectedElement: null,
+            SelectedElementOldName: null,
+            SelectedElementOldID: null
+        });
+    }
+    _event_modal_onElementBind(event)
+    {
+        window.dispatchEvent(new CustomEvent("_event_modal_bindtonode_", { detail: { element: this.state.SelectedElement} }));
+        this.setState({
+            Element_Properties: false
+        });        
     }
     updateSize()
     {
@@ -649,6 +725,7 @@ class App extends Component
             node_location_y = this.state.SelectedNode.Location.Y;
             node_location_z = this.state.SelectedNode.Location.Z;
         }
+        let tbgdefault = [];
         let element_name = "";
         let element_name_old = "";
         let element_type = "";
@@ -658,6 +735,10 @@ class App extends Component
         let element_node_location = "";
         if (this.state.SelectedElement)
         {
+            if (this.state.SelectedElement.Object.RenderMode === "WireFrame")
+            {
+                tbgdefault.push(1);
+            }
             element_name_old = this.state.SelectedElementOldName;
             element_type_old = this.state.SelectedElementOldType;
             if (this.state.SelectedElement.Name === this.state.SelectedElementOldName)
@@ -692,11 +773,10 @@ class App extends Component
                 element_node_name = this.state.SelectedElement.Node.Name;
                 element_node_location = "(" + this.state.SelectedElement.Node.Location.X + ", " + this.state.SelectedElement.Node.Location.Y + ", " + this.state.SelectedElement.Node.Location.Z + ")";
             }
-        }
-        let tbgdefault = 0;
-        if (this.state.Element_CodeCreate)
-        {
-            tbgdefault = 1;
+            if (this.state.Element_CodeCreate)
+            {
+                tbgdefault.push(2);
+            }
         }
         return (
             <div>
@@ -715,7 +795,7 @@ class App extends Component
                     <canvas id="studios.vanish.component.3D" style={this.GetStyle()}></canvas>
                     <canvas id="studios.vanish.component.2D" style={this.GetStyle()}></canvas>
                 </div>
-                <Modal bsSize="large" show={this.state.Element_Properties}>
+                <Modal bsSize="large" show={this.state.Element_Properties} onHide={this._event_modal_onOk}>
                     <Modal.Header closeButton>
                             <Modal.Title>Element Properties</Modal.Title>
                     </Modal.Header>
@@ -750,7 +830,7 @@ class App extends Component
                                     </InputGroup>
                                     <div style={{ textAlign: "right", paddingTop: 10 }}>
                                         <ButtonGroup>
-                                            <Button href="#" onClick={null}>Bind To Node</Button>
+                                            <Button href="#" onClick={this._event_modal_onElementBind}>Bind To Node</Button>
                                         </ButtonGroup>
                                     </div>
                                 </Col>
@@ -758,8 +838,9 @@ class App extends Component
                             <FormGroup style={{ height: 1, backgroundColor: "rgba(10, 10, 10, 0.10)" }}></FormGroup>
                             <p>Object</p>
                             <div style={{ textAlign: "right", paddingBottom: 10 }}>
-                                <ToggleButtonGroup type="checkbox" defaultValue={tbgdefault} onChange={this._event_modal_onElementCodeMode}>
-                                    <ToggleButton value={1}>Code Mode</ToggleButton>
+                                <ToggleButtonGroup type="checkbox" defaultValue={tbgdefault} onChange={this._event_modal_onElementToggle}>
+                                    <ToggleButton value={1}>Wireframe</ToggleButton>
+                                    <ToggleButton value={2}>Code Mode</ToggleButton>
                                 </ToggleButtonGroup>
                             </div>
                             <FormGroup>
@@ -781,8 +862,8 @@ class App extends Component
                             <FormGroup style={{ height: 1, backgroundColor: "rgba(10, 10, 10, 0.10)" }}></FormGroup>
                             <FormGroup style={{ textAlign: "right", marginRight: 0 }}>
                                 <ButtonGroup>
-                                    <Button bsStyle="danger" href="#" onClick={null}>Delete</Button>
-                                    <Button bsStyle="success" href="#" onClick={null}>Ok</Button>
+                                    <Button bsStyle="danger" href="#" onClick={this._event_modal_onDeleteElement}>Delete</Button>
+                                    <Button bsStyle="success" href="#" onClick={this._event_modal_onOk}>Ok</Button>
                                 </ButtonGroup>
                             </FormGroup>
                         </Form>

@@ -18,6 +18,7 @@ let selectedNodeIndex = -1;
 let inPropertyWindow = false;
 let bulkcreate = 0;
 let createNeighbor = false;
+let bindtonode = false;
 
 let start = null;
 let end = null;
@@ -36,6 +37,8 @@ function Main()
     window.addEventListener("_event_element_addindex_", _event_modal_onElementIndexAdd);
     window.addEventListener("_event_element_executevertexcode_", _event_modal_onElementExecuteVertex);
     window.addEventListener("_event_element_executeindexcode_", _event_modal_onElementExecuteIndex);
+    window.addEventListener("_event_modal_element_delete_", _event_modal_onElementDelete);
+    window.addEventListener("_event_modal_bindtonode_", _event_modal_onBindToNode);
     RC2.addEventListener("mousedown", _event_onMouseDown);
     RC2.addEventListener("touchstart", _event_onTouchDown);
     RC2.addEventListener("mouseup", _event_onMouseUp);
@@ -179,6 +182,15 @@ function _event_onNodeSelect(event, nIndex)
             window.dispatchEvent(new CustomEvent("_event_onSignalNeighbor", { detail: {} }));
         }
     }
+    if (bindtonode)
+    {
+        console.log("TEST");
+        selectedNode = event;
+        selectedNode.Selected = true;
+        selectedNodeIndex = nIndex;
+        bindtonode = false;
+        window.dispatchEvent(new CustomEvent("_event_onSignalBind", { detail: {node: event} }));
+    }
 }
 function _event_onNavigationSelect(event)
 {
@@ -198,10 +210,33 @@ function _event_onNavigationSelect(event)
         obj = new Object3D(ME, Vertices, Indices, "New Object");
         let N = new Element(obj, "New Element", "Generic");
         N.BindToNode(selectedNode);
+        selectedElement = N;
         graph.RegisterElement(N);
         window.dispatchEvent(new CustomEvent("_event_onSignalElements", { detail: { element: N } }));
-        inPropertyWindow = true;  
+        inPropertyWindow = true;
     }
+    else if (navigation === "_navigation_element_inspect")
+    {
+        if (selectedNode)
+        {
+            for (let i = 0; i < graph.Elements.length; i++)
+            {
+                if (graph.Elements[i].Node === selectedNode)
+                {
+                    window.dispatchEvent(new CustomEvent("_event_onSignalElements", { detail: { element: graph.Elements[i] } }));
+                    inPropertyWindow = true;
+                    break;
+                }
+            }
+        }
+    }
+    else if (navigation === "_navigation_element_remove")
+    {
+        if (selectedNode)
+        {
+            _event_modal_onElementDelete();
+        }    
+    }    
     else if (navigation === "_navigation_node_create")
     {
         let N = new Node("New Node", new Vertex(0, 0, 0));
@@ -407,6 +442,22 @@ function _event_modal_onElementExecuteIndex(event)
     {
         
     }    
+}
+function _event_modal_onElementDelete(event)
+{    
+    for (let i = 0; i < graph.Elements.length; i++)
+    {
+        if (graph.Elements[i].Node === selectedNode)
+        {
+            graph.Elements.splice(i, 1);
+            break;
+        }
+    }
+    inPropertyWindow = false;
+}
+function _event_modal_onBindToNode(event)
+{
+    bindtonode = true;
 }
 function MainLoop()
 {
