@@ -77,14 +77,14 @@ class App extends Component
                 <InputGroup.Addon>{int + 1}</InputGroup.Addon>
                 <FormControl type="text" value={"pathTo={" + node.Neighbors[int].EndNode.ID + ", " + node.Neighbors[int].EndNode.Name + "}, distance={" + node.Neighbors[int].Distance + "}"} readOnly />
                 <InputGroup.Button>
-                        <Button href="#" bsStyle="danger" onClick={() => this._event_modal_onDeleteNeighbor(int)}><Glyphicon glyph="remove" /></Button>
+                    <Button href="#" bsStyle="danger" onClick={() => this._event_modal_onDeleteNeighbor(int)}><Glyphicon glyph="minus" /></Button>
                 </InputGroup.Button>
             </InputGroup>
         )
     }
     CreateNeighbors()
     {
-        if (this.state.Properties)
+        if (this.state.Properties && this.state.SelectedNode.Neighbors.length > 0)
         {
             let node = this.state.SelectedNode;
             let itms = [];
@@ -100,7 +100,7 @@ class App extends Component
         }
         else
         {
-            return (<p>No Neighbors</p>)
+            return (<p style={{ paddingTop: 10 }}>Looks like this node is a bit lonely. Add a neighbor association by clicking on the {"\""}+{"\""} button below and selecting another node.</p>)
         }
     }
     NavigationCollapse()
@@ -355,6 +355,111 @@ class App extends Component
                     <canvas id="studios.vanish.component.3D" style={this.GetStyle()}></canvas>
                     <canvas id="studios.vanish.component.2D" style={this.GetStyle()}></canvas>
                 </div>
+                <Modal bsSize="large" show={false}>
+                    <Modal.Header closeButton>
+                            <Modal.Title>Element Properties</Modal.Title>
+                    </Modal.Header>
+                    <Modal.Body>
+                        <Form horizontal>
+                            <p>General</p>
+                            <FormGroup>
+                                <Col sm={2} style={{ textAlign: "right", paddingTop: 5 }}>
+                                    Element
+                                </Col>
+                                <Col sm={10}>
+                                    <InputGroup>
+                                        <InputGroup.Addon>name</InputGroup.Addon>
+                                        <FormControl type="text" value={""} placeholder={"name"} onChange={null} />
+                                        <InputGroup.Addon>type</InputGroup.Addon>
+                                        <FormControl type="text" value={""} placeholder={"type"} onChange={null} />
+                                    </InputGroup>
+                                </Col>
+                            </FormGroup>
+                            <FormGroup>
+                                <Col sm={2} style={{ textAlign: "right", paddingTop: 5 }}>
+                                    Node
+                                </Col>
+                                <Col sm={10}>
+                                    <InputGroup>
+                                        <InputGroup.Addon>name</InputGroup.Addon>
+                                        <FormControl type="text" value={""} placeholder={"name"} onChange={null} />
+                                        <InputGroup.Addon>type</InputGroup.Addon>
+                                        <FormControl type="text" value={""} placeholder={"type"} onChange={null} />
+                                    </InputGroup>
+                                </Col>
+                            </FormGroup>
+                            <FormGroup style={{ height: 1, backgroundColor: "rgba(10, 10, 10, 0.10)" }}></FormGroup>
+                            <p>Object</p>
+                            <FormGroup>
+                                <Col sm={2} style={{ textAlign: "right", paddingTop: 5 }}>
+                                    Vertices
+                                </Col>
+                                <Col sm={10}>
+                                    <InputGroup style={{ paddingBottom: 10 }}>
+                                        <InputGroup.Addon>01</InputGroup.Addon>
+                                        <InputGroup style={{ boxShadow: "none" }}>
+                                            <InputGroup.Addon style={{ borderRadius: 0 }}>x</InputGroup.Addon>
+                                            <FormControl type="text" value={""} placeholder={"0"} onChange={null} />
+                                            <InputGroup.Addon>y</InputGroup.Addon>
+                                            <FormControl type="text" value={""} placeholder={"0"} onChange={null} />
+                                            <InputGroup.Addon>z</InputGroup.Addon>
+                                            <FormControl style={{ borderRadius: 0 }} type="text" value={""} placeholder={"0"} onChange={null} />
+                                        </InputGroup>
+                                        <InputGroup style={{ boxShadow: "none" }}>
+                                            <InputGroup.Addon style={{ paddingLeft: 13, paddingRight: 13, borderRadius: 0, }}>r</InputGroup.Addon>
+                                            <FormControl type="text" value={""} placeholder={"0"} onChange={null} />
+                                            <InputGroup.Addon style={{ paddingLeft: 12, paddingRight: 11 }}>g</InputGroup.Addon>
+                                            <FormControl type="text" value={""} placeholder={"0"} onChange={null} />
+                                            <InputGroup.Addon style={{ paddingLeft: 12, paddingRight: 11 }}>b</InputGroup.Addon>
+                                            <FormControl style={{ borderRadius: 0 }} type="text" value={""} placeholder={"0"} onChange={null} />
+                                        </InputGroup>
+                                        <InputGroup.Button>
+                                            <Button style={{ height: 68, paddingTop: "60%" }} href="#" bsStyle="danger" onClick={null}><Glyphicon glyph="minus" /></Button>
+                                        </InputGroup.Button>
+                                    </InputGroup>
+                                    <div style={{ textAlign: "right", paddingTop: 0 }}>
+                                        <ButtonGroup>
+                                            <Button href="#" onClick={null}>Clear</Button>
+                                            <Button href="#" onClick={null}>Create</Button>
+                                            <Button href="#" bsStyle="success" onClick={null}><Glyphicon glyph="plus" /></Button>
+                                        </ButtonGroup>
+                                    </div>
+                                </Col>
+                            </FormGroup>
+                            <FormGroup>
+                                <Col sm={2} style={{ textAlign: "right", paddingTop: 5 }}>
+                                    Faces
+                                </Col>
+                                <Col sm={10}>
+                                    <InputGroup style={{ paddingBottom: 10 }}>
+                                        <InputGroup.Addon>index 01</InputGroup.Addon>
+                                        <FormControl type="text" value={""} placeholder={""} onChange={null} />
+                                        <InputGroup.Addon>index 02</InputGroup.Addon>
+                                        <FormControl type="text" value={""} placeholder={""} onChange={null} />
+                                        <InputGroup.Addon>index 03</InputGroup.Addon>
+                                        <FormControl type="text" value={""} placeholder={""} onChange={null} />
+                                        <InputGroup.Button>
+                                            <Button href="#" bsStyle="danger" onClick={null}><Glyphicon glyph="minus" /></Button>
+                                        </InputGroup.Button>
+                                    </InputGroup>
+                                    <div style={{ textAlign: "right", paddingTop: 0 }}>
+                                        <ButtonGroup>
+                                            <Button href="#" onClick={null}>Clear</Button>
+                                            <Button href="#" bsStyle="success" onClick={null}><Glyphicon glyph="plus" /></Button>
+                                        </ButtonGroup>
+                                    </div>
+                                </Col>
+                            </FormGroup>
+                            <FormGroup style={{ height: 1, backgroundColor: "rgba(10, 10, 10, 0.10)" }}></FormGroup>
+                            <FormGroup style={{ textAlign: "right", marginRight: 0 }}>
+                                <ButtonGroup>
+                                    <Button bsStyle="danger" href="#" onClick={null}>Delete</Button>
+                                    <Button bsStyle="success" href="#" onClick={null}>Ok</Button>
+                                </ButtonGroup>
+                            </FormGroup>
+                        </Form>
+                    </Modal.Body>
+                </Modal>
                 <Modal show={this.state.Properties} onHide={this._event_modal_onOk}>
                     <Modal.Header closeButton>
                         <Modal.Title>Node Properties</Modal.Title>
@@ -388,11 +493,6 @@ class App extends Component
                                         <InputGroup.Addon>z</InputGroup.Addon>
                                         <FormControl type="number" value={node_location_z} placeholder="z" onChange={this._event_modal_onLocationZ} />
                                     </InputGroup>
-                                    <div style={{ textAlign: "left", paddingTop: 15 }}>
-                                        <ButtonGroup>
-                                            <Button href="#">Center Camera</Button>
-                                        </ButtonGroup>
-                                    </div>
                                 </Col>
                             </FormGroup>
                             <FormGroup style={{ height: 1, backgroundColor: "rgba(10, 10, 10, 0.10)" }}></FormGroup>
@@ -403,22 +503,10 @@ class App extends Component
                                 </Col>
                                 <Col sm={10}>
                                     {this.CreateNeighbors()}    
-                                    <div style={{ textAlign: "left", paddingTop: 0 }}>
+                                    <div style={{ textAlign: "right", paddingTop: 0 }}>
                                         <ButtonGroup>
                                             <Button href="#" onClick={this._event_modal_onIsolateNeighbors}>Isolate</Button>
-                                            <Button href="#" bsStyle="success" onClick={this._event_modal_onCreateNeighbor}>Create</Button>
-                                        </ButtonGroup>
-                                    </div>
-                                </Col>
-                            </FormGroup>
-                            <FormGroup>
-                                <Col sm={2} style={{ textAlign: "right", paddingTop: 5 }}>
-                                    Element
-                                </Col>
-                                <Col sm={10}>
-                                    <div style={{ textAlign: "right", paddingBottom: 10 }}>
-                                        <ButtonGroup>
-                                            <Button href="#">Bind Element</Button>
+                                            <Button href="#" bsStyle="success" onClick={this._event_modal_onCreateNeighbor}><Glyphicon glyph="plus" /></Button>
                                         </ButtonGroup>
                                     </div>
                                 </Col>
