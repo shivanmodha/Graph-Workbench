@@ -1,0 +1,3 @@
+# Auto detect text files and perform LF normalization
+* text=auto
+src/bootstrap-3.3.7/* linguist-vendored
