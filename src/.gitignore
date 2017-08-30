@@ -2,6 +2,7 @@
 
 # dependencies
 /node_modules
+/bootstrap-3.3.7/node_modules
 
 # testing
 /coverage
