@@ -23,7 +23,10 @@
                 "Zoom In": "_navigation_view_zoomin",
                 "Zoom Out": "_navigation_view_zoomout",
                 "div1": "divider",
-                "Reset Camera": "_navigation_view_resetcamera"
+                "Camera": "_navigation_view_camera",
+                "Reset Camera": "_navigation_view_resetcamera",
+                "div2": "divider",
+                "Floors": "_navigation_view_floors"
             }
         },
         "Path": {

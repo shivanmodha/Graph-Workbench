@@ -30,6 +30,8 @@ let cursor_default = new Image;
 let cursor_move = new Image;
 let c = 0;
 
+let cinj = "";
+
 function Main()
 {
     graph = new Graph();
@@ -47,6 +49,7 @@ function Main()
     window.addEventListener("_event_element_executeindexcode_", _event_modal_onElementExecuteIndex);
     window.addEventListener("_event_modal_element_delete_", _event_modal_onElementDelete);
     window.addEventListener("_event_modal_bindtonode_", _event_modal_onBindToNode);
+    window.addEventListener("_event_onInjectChange", _event_onInjectChange);
     RC2.addEventListener("mousedown", _event_onMouseDown);
     RC2.addEventListener("touchstart", _event_onTouchDown);
     RC2.addEventListener("mouseup", _event_onMouseUp);
@@ -66,6 +69,11 @@ function Main()
     Initialize();
     MainLoop();
     UpdateURL();
+}
+function EnableCodeInjection()
+{
+    window.dispatchEvent(new CustomEvent("_event_onSignalCodeInjection"), {});
+    return 0;
 }
 function UpdateURL()
 {
@@ -376,6 +384,10 @@ function _event_onNavigationSelect(event)
     {
         window.dispatchEvent(new CustomEvent("_event_onSignalAbout", { detail: { } }));
     }
+    else if (navigation === "_navigation_inject")
+    {
+        window.dispatchEvent(new CustomEvent("_event_onSignalShowInject", { detail: { cinj: cinj } }));
+    }
 }
 function _event_onMouseDown(event)
 {
@@ -551,6 +563,10 @@ function _event_modal_onBindToNode(event)
 {
     bindtonode = true;
 }
+function _event_onInjectChange(event)
+{
+    cinj = event.detail.cinj;
+}
 function MainLoop()
 {
     requestAnimFrame(MainLoop);
@@ -599,5 +615,13 @@ function Render()
     else if (c === 1)
     {
         ME.Device2D.drawImage(cursor_move, MousePosition.X - 15, MousePosition.Y - 15, 30, 30);
+    }
+    try
+    {
+        eval(cinj);
+    }
+    catch (e)
+    {
+        
     }
 }    

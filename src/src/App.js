@@ -25,6 +25,8 @@ class App extends Component
         this._event_onSignalBind = this._event_onSignalBind.bind(this);
         this._event_onSignalURL = this._event_onSignalURL.bind(this);
         this._event_onSignalAbout = this._event_onSignalAbout.bind(this);
+        this._event_onSignalCodeInjection = this._event_onSignalCodeInjection.bind(this);
+        this._event_onSignalShowInject = this._event_onSignalShowInject.bind(this);
         this._event_modal_onNameChanged = this._event_modal_onNameChanged.bind(this);
         this._event_modal_onIDChanged = this._event_modal_onIDChanged.bind(this);
         this._event_modal_onLocationX = this._event_modal_onLocationX.bind(this);
@@ -57,6 +59,8 @@ class App extends Component
         window.addEventListener("_event_onSignalBind", this._event_onSignalBind);
         window.addEventListener("_event_onSignalURL", this._event_onSignalURL);
         window.addEventListener("_event_onSignalAbout", this._event_onSignalAbout);
+        window.addEventListener("_event_onSignalCodeInjection", this._event_onSignalCodeInjection);
+        window.addEventListener("_event_onSignalShowInject", this._event_onSignalShowInject);
     }
     componentWillMount()
     {
@@ -81,7 +85,10 @@ class App extends Component
             url: "",
             about: false,
             bulkcreate: false,
-            number: 5
+            number: 5,
+            ShowCodeInjection: false,
+            CodeInjection: false,
+            cinj: ""
         });
     }
     componentDidMount()
@@ -376,6 +383,10 @@ class App extends Component
                 links[child["side"]].push(this.CreateDropdown(child, key));
             }
         });
+        if (this.state.CodeInjection)
+        {
+            links["right"].push(<NavItem eventKey={"_navigation_inject"} href={"#"}>{"Inject"}</NavItem>);
+        }
         return (
             <Navbar.Collapse>
                 <Nav pullLeft onSelect={this._event_onNavigationSelect}> {links["left"]} </Nav>
@@ -498,6 +509,19 @@ class App extends Component
     {
         this.setState({
             about: true
+        });
+    }
+    _event_onSignalCodeInjection(event)
+    {
+        this.setState({
+            CodeInjection: true
+        });
+    }
+    _event_onSignalShowInject(event)
+    {
+        this.setState({
+            ShowCodeInjection: true,
+            cinj: event.detail.cinj
         });
     }
     _event_modal_onNameChanged(event)
@@ -854,6 +878,29 @@ class App extends Component
                     <canvas id="studios.vanish.component.3D" style={this.GetStyle()}></canvas>
                     <canvas id="studios.vanish.component.2D" style={this.GetStyle()}></canvas>
                 </div>
+                <Modal show={this.state.ShowCodeInjection} onHide={() => { this.setState({ ShowCodeInjection: false }); }}>
+                    <Modal.Header>
+                        <Modal.Title>Inject</Modal.Title>
+                    </Modal.Header>
+                    <Modal.Body>
+                        <Form horizontal>
+                            <FormGroup>
+                                <Col sm={2} style={{ textAlign: "right", paddingTop: 5 }}>
+                                    Code
+                                </Col>
+                                <Col sm={10}>
+                                    <FormControl style={{ resize: "vertical", height: 200, fontFamily: "monospace" }} componentClass="textarea" type="text" value={this.state.cinj} placeholder="inject code directly to the renderer here" onChange={(event) => { this.setState({ cinj: event.target.value }); window.dispatchEvent(new CustomEvent("_event_onInjectChange", { detail: { cinj: event.target.value } })); }} />    
+                                </Col>
+                            </FormGroup>
+                            <FormGroup style={{ marginTop: 10, height: 1, backgroundColor: "rgba(150, 150, 150, 0.50)" }}></FormGroup>
+                            <FormGroup style={{ textAlign: "right", marginRight: 0 }}>
+                                <ButtonGroup>
+                                    <Button bsStyle="success" href="#" onClick={() => { this.setState({ ShowCodeInjection: false }); }}>Ok</Button>
+                                </ButtonGroup>
+                            </FormGroup>
+                        </Form>    
+                    </Modal.Body>
+                </Modal>
                 <Modal show={this.state.bulkcreate} onHide={() => { this.setState({ bulkcreate: false }); }}>
                     <Modal.Header>
                         <Modal.Title>Bulk Create</Modal.Title>
@@ -966,6 +1013,7 @@ class App extends Component
                                 <ButtonGroup>
                                     <Button href="https://shivanmodha.github.io/">Home</Button>
                                     <Button href="https://github.com/shivanmodha/">GitHub</Button>
+                                    <Button href="#" onClick={() => { this.setState({ Welcome: false }); this._event_onNavigationSelect("_navigation_file_open"); }}>Open</Button>
                                     <Button bsStyle="success" href="#" onClick={() => { this.setState({ Welcome: false }); }}>Blank Template</Button>
                                 </ButtonGroup>
                             </FormGroup>
