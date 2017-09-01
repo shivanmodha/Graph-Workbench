@@ -27,6 +27,8 @@ class App extends Component
         this._event_onSignalAbout = this._event_onSignalAbout.bind(this);
         this._event_onSignalCodeInjection = this._event_onSignalCodeInjection.bind(this);
         this._event_onSignalShowInject = this._event_onSignalShowInject.bind(this);
+        this._event_onSignalCamera = this._event_onSignalCamera.bind(this);
+        this._event_onSignalFloors = this._event_onSignalFloors.bind(this);
         this._event_modal_onNameChanged = this._event_modal_onNameChanged.bind(this);
         this._event_modal_onIDChanged = this._event_modal_onIDChanged.bind(this);
         this._event_modal_onLocationX = this._event_modal_onLocationX.bind(this);
@@ -61,6 +63,8 @@ class App extends Component
         window.addEventListener("_event_onSignalAbout", this._event_onSignalAbout);
         window.addEventListener("_event_onSignalCodeInjection", this._event_onSignalCodeInjection);
         window.addEventListener("_event_onSignalShowInject", this._event_onSignalShowInject);
+        window.addEventListener("_event_onSignalCamera", this._event_onSignalCamera);
+        window.addEventListener("_event_onSignalFloors", this._event_onSignalFloors);
     }
     componentWillMount()
     {
@@ -88,7 +92,11 @@ class App extends Component
             number: 5,
             ShowCodeInjection: false,
             CodeInjection: false,
-            cinj: ""
+            cinj: "",
+            cam: null,
+            showCamera: false,
+            floor: 1,
+            showFloor: false
         });
     }
     componentDidMount()
@@ -524,6 +532,20 @@ class App extends Component
             cinj: event.detail.cinj
         });
     }
+    _event_onSignalCamera(event)
+    {
+        this.setState({
+            showCamera: true,
+            cam: event.detail.camera
+        });
+    }
+    _event_onSignalFloors(event)
+    {
+        this.setState({
+            showFloor: true,
+            floor: event.detail.floor
+        });
+    }
     _event_modal_onNameChanged(event)
     {
         this.state.SelectedNode.Name = event.target.value;
@@ -878,6 +900,82 @@ class App extends Component
                     <canvas id="studios.vanish.component.3D" style={this.GetStyle()}></canvas>
                     <canvas id="studios.vanish.component.2D" style={this.GetStyle()}></canvas>
                 </div>
+                <Modal show={this.state.showCamera} onHide={() => { this.state.cam.Location.X = parseFloat(this.state.cam.Location.X); this.state.cam.Location.Y = parseFloat(this.state.cam.Location.Y); this.state.cam.Location.Z = parseFloat(this.state.cam.Location.Z); this.state.cam.Rotation.X = parseFloat(this.state.cam.Rotation.X); this.state.cam.Rotation.Y = parseFloat(this.state.cam.Rotation.Y); this.state.cam.Rotation.Z = parseFloat(this.state.cam.Rotation.Z); this.setState({ showCamera: false }); }}>
+                    <Modal.Header>
+                        <Modal.Title>Camera</Modal.Title>
+                    </Modal.Header>
+                    <Modal.Body>
+                        <Form horizontal>
+                            <FormGroup>
+                                <Col sm={2} style={{ textAlign: "right", paddingTop: 5 }}>
+                                    Location
+                                </Col>
+                                <Col sm={10}>
+                                    <InputGroup>
+                                        <InputGroup.Addon>x</InputGroup.Addon>
+                                        <FormControl type="text" value={(() => { if (this.state.cam) { return this.state.cam.Location.X; } else { return ""; } })()} placeholder={node_id_old} onChange={(event) => { try { this.state.cam.Location.X = event.target.value; } catch (e) { } this.setState({ cam: this.state.cam }); }} />
+                                        <InputGroup.Addon>y</InputGroup.Addon>
+                                        <FormControl type="text" value={(() => { if (this.state.cam) { return this.state.cam.Location.Y; } else { return ""; } })()} placeholder={node_name_old} onChange={(event) => { try { this.state.cam.Location.Y = event.target.value; } catch (e) { } this.setState({ cam: this.state.cam }); }} />
+                                        <InputGroup.Addon>z</InputGroup.Addon>
+                                        <FormControl type="text" value={(() => { if (this.state.cam) { return this.state.cam.Location.Z; } else { return ""; } })()} placeholder={node_name_old} onChange={(event) => { try { this.state.cam.Location.Z = event.target.value; } catch (e) { } this.setState({ cam: this.state.cam }); }} />
+                                    </InputGroup>
+                                </Col>
+                            </FormGroup>
+                            <FormGroup>
+                                <Col sm={2} style={{ textAlign: "right", paddingTop: 5 }}>
+                                    Rotation
+                                </Col>
+                                <Col sm={10}>
+                                <InputGroup>
+                                    <InputGroup.Addon>x</InputGroup.Addon>
+                                    <FormControl type="text" value={(() => { if (this.state.cam) { return this.state.cam.Rotation.X; } else { return ""; } })()} placeholder={node_id_old} onChange={(event) => { try { this.state.cam.Rotation.X = event.target.value; } catch (e) { } this.setState({ cam: this.state.cam }); }} />
+                                    <InputGroup.Addon>y</InputGroup.Addon>
+                                    <FormControl type="text" value={(() => { if (this.state.cam) { return this.state.cam.Rotation.Y; } else { return ""; } })()} placeholder={node_name_old} onChange={(event) => { try { this.state.cam.Rotation.Y = event.target.value; } catch (e) { } this.setState({ cam: this.state.cam }); }} />
+                                    <InputGroup.Addon>z</InputGroup.Addon>
+                                    <FormControl type="text" value={(() => { if (this.state.cam) { return this.state.cam.Rotation.Z; } else { return ""; } })()} placeholder={node_name_old} onChange={(event) => { try { this.state.cam.Rotation.Z = event.target.value; } catch (e) { } this.setState({ cam: this.state.cam }); }} />
+                                </InputGroup>
+                                </Col>
+                            </FormGroup>
+                            <FormGroup style={{ marginTop: 10, height: 1, backgroundColor: "rgba(150, 150, 150, 0.50)" }}></FormGroup>
+                            <FormGroup style={{ textAlign: "right", marginRight: 0 }}>
+                                <ButtonGroup>
+                                    <Button bsStyle="success" href="#" onClick={() => { this.state.cam.Location.X = parseFloat(this.state.cam.Location.X); this.state.cam.Location.Y = parseFloat(this.state.cam.Location.Y); this.state.cam.Location.Z = parseFloat(this.state.cam.Location.Z); this.state.cam.Rotation.X = parseFloat(this.state.cam.Rotation.X); this.state.cam.Rotation.Y = parseFloat(this.state.cam.Rotation.Y); this.state.cam.Rotation.Z = parseFloat(this.state.cam.Rotation.Z); this.setState({ showCamera: false }); }}>Ok</Button>
+                                </ButtonGroup>
+                            </FormGroup>
+                        </Form>    
+                    </Modal.Body>
+                </Modal>                
+                <Modal show={this.state.showFloor} onHide={() => { this.setState({ showFloor: false }); }}>
+                    <Modal.Header>
+                        <Modal.Title>Floors</Modal.Title>
+                    </Modal.Header>
+                    <Modal.Body>
+                        <Form horizontal>
+                            <FormGroup>
+                                <Col sm={2} style={{ textAlign: "right", paddingTop: 5 }}>
+                                    Selected Floor
+                                </Col>
+                                <Col sm={10}>
+                                    TextBOx
+                                </Col>
+                            </FormGroup>
+                            <FormGroup>
+                                <Col sm={2} style={{ textAlign: "right", paddingTop: 5 }}>
+                                    Floors
+                                </Col>
+                                <Col sm={10}>
+                                    Text
+                                </Col>
+                            </FormGroup>
+                            <FormGroup style={{ marginTop: 10, height: 1, backgroundColor: "rgba(150, 150, 150, 0.50)" }}></FormGroup>
+                            <FormGroup style={{ textAlign: "right", marginRight: 0 }}>
+                                <ButtonGroup>
+                                    <Button bsStyle="success" href="#" onClick={() => { this.setState({ showFloor: false }); }}>Ok</Button>
+                                </ButtonGroup>
+                            </FormGroup>
+                        </Form>    
+                    </Modal.Body>
+                </Modal>
                 <Modal show={this.state.ShowCodeInjection} onHide={() => { this.setState({ ShowCodeInjection: false }); }}>
                     <Modal.Header>
                         <Modal.Title>Inject</Modal.Title>

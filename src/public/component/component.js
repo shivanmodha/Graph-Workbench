@@ -315,6 +315,7 @@ function _event_onNavigationSelect(event)
     else if (navigation === "_navigation_view_resetcamera")
     {
         ME.Camera.Location = new Vertex(0, 0, 5);
+        ME.Camera.Rotation = new Vertex(0, 0, 0);
         UpdateURL();
     }
     else if (navigation === "_navigation_path_start")
@@ -387,6 +388,14 @@ function _event_onNavigationSelect(event)
     else if (navigation === "_navigation_inject")
     {
         window.dispatchEvent(new CustomEvent("_event_onSignalShowInject", { detail: { cinj: cinj } }));
+    }
+    else if (navigation === "_navigation_view_camera")
+    {
+        window.dispatchEvent(new CustomEvent("_event_onSignalCamera", { detail: { camera: ME.Camera } }));
+    }
+    else if (navigation === "_navigation_view_floors")
+    {
+        window.dispatchEvent(new CustomEvent("_event_onSignalFloors", { detail: { floor: RenderedFloor } }));
     }
 }
 function _event_onMouseDown(event)
