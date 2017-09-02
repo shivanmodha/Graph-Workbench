@@ -1086,12 +1086,11 @@ class App extends Component
                         <Form horizontal>
                             <div style={{ color: "#66afe9", paddingTop: 0, marginTop: 0 }}>
                                 <h3 style={{ paddingTop: 0, marginTop: 0 }}>Release Notes</h3>
-                                <p>Version: 1.0.2</p>
-                                <h4>Features</h4>
+                                <p>Version: 1.0.3</p>
+                                <h4>New Features</h4>
                                 <ul>
-                                    <li>URL Graph Sharing</li>
-                                    <li>Web Support</li>
-                                    <li>3D Object Binding</li>
+                                    <li>Graph Floor Implementation</li>
+                                    <li>Camera Control</li>
                                 </ul>
                                 <p style={{ textAlign: "left" }}>Developed by Shivan Modha, <i>Vanish Studios</i></p>
                             </div>
@@ -1205,7 +1204,7 @@ class App extends Component
                                     <div style={{ textAlign: "left", paddingBottom: 10 }}>
                                         <ToggleButtonGroup type="checkbox" defaultValue={tbgdefault} onChange={this._event_modal_onElementToggle}>
                                             <ToggleButton value={1}>Wireframe</ToggleButton>
-                                            <ToggleButton value={2}>Code Mode</ToggleButton>
+                                            <ToggleButton value={2}>Text Mode</ToggleButton>
                                         </ToggleButtonGroup>
                                     </div>
                                 </Col>

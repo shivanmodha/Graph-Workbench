@@ -225,7 +225,8 @@ let Graph = class Graph
     {
         let js = {
             "nodes": [],
-            "maxid": nID
+            "maxid": nID,
+            "floors": this.Floors
         };
         for (let i = 0; i < this.Nodes.length; i++)
         {
@@ -287,6 +288,10 @@ let Graph = class Graph
     FromJson(ME, js)
     {
         nID = js["maxid"];
+        if (js["floors"])
+        {
+            this.Floors = js["floors"];
+        }
         for (let i = 0; i < js["nodes"].length; i++)
         {
             let n = new Node(js["nodes"][i]["name"], new Vertex(js["nodes"][i]["location"]["x"], js["nodes"][i]["location"]["y"], js["nodes"][i]["location"]["z"]));
