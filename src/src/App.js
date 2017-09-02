@@ -54,6 +54,8 @@ class App extends Component
         this.CreateIndex = this.CreateIndex.bind(this);
         this.CreateIndices = this.CreateIndices.bind(this);
         this.CreateIndicesContainer = this.CreateIndicesContainer.bind(this);
+        this.CreateFloor = this.CreateFloor.bind(this);
+        this.CreateFloors = this.CreateFloors.bind(this);
         window.addEventListener("_event_onSignalProperties", this._event_onSignalProperties);
         window.addEventListener("_event_onSignalNeighbor", this._event_onSignalNeighbor);
         window.addEventListener("_event_onURLChange", this._event_onURLChange);
@@ -96,6 +98,7 @@ class App extends Component
             cam: null,
             showCamera: false,
             floor: 1,
+            floors: [["Default", -100, 100]],
             showFloor: false
         });
     }
@@ -193,39 +196,39 @@ class App extends Component
                     <InputGroup.Addon style={{ paddingLeft: 13, paddingRight: 13, borderRadius: 0 }}>r</InputGroup.Addon>
                     <FormControl type="number" value={element.Object.Vertices[int].R} onChange={(event) =>
                     {
-                        element.Object.Vertices[int].R = event.target.value;  
-                        window.dispatchEvent(new CustomEvent("_event_rebuild_element_", { detail: {element: element} }));                      
+                        element.Object.Vertices[int].R = event.target.value;
+                        window.dispatchEvent(new CustomEvent("_event_rebuild_element_", { detail: {element: element} }));
                         this.setState({
                             SelectedElement: this.state.SelectedElement
-                        });                  
+                        });
                     }} />
                     <InputGroup.Addon style={{ paddingLeft: 12, paddingRight: 11 }}>g</InputGroup.Addon>
                     <FormControl type="number" value={element.Object.Vertices[int].G} onChange={(event) =>
                     {
-                        element.Object.Vertices[int].G = event.target.value;  
-                        window.dispatchEvent(new CustomEvent("_event_rebuild_element_", { detail: {element: element} }));                      
+                        element.Object.Vertices[int].G = event.target.value;
+                        window.dispatchEvent(new CustomEvent("_event_rebuild_element_", { detail: {element: element} }));
                         this.setState({
                             SelectedElement: this.state.SelectedElement
-                        });                  
+                        });
                     }} />
                     <InputGroup.Addon style={{ paddingLeft: 12, paddingRight: 11 }}>b</InputGroup.Addon>
                     <FormControl style={{ borderRadius: 0 }} type="number" value={element.Object.Vertices[int].B} onChange={(event) =>
                     {
-                        element.Object.Vertices[int].B = event.target.value;  
-                        window.dispatchEvent(new CustomEvent("_event_rebuild_element_", { detail: {element: element} }));                      
+                        element.Object.Vertices[int].B = event.target.value;
+                        window.dispatchEvent(new CustomEvent("_event_rebuild_element_", { detail: {element: element} }));
                         this.setState({
                             SelectedElement: this.state.SelectedElement
-                        });                  
+                        });
                     }} />
                 </InputGroup>
                 <InputGroup.Button>
                     <Button style={{ height: 68, paddingTop: "65%" }} href="#" bsStyle="danger" onClick={(event) =>
                     {
-                        element.Object.Vertices.splice(int, 1);  
-                        window.dispatchEvent(new CustomEvent("_event_rebuild_element_", { detail: {element: element} }));                      
+                        element.Object.Vertices.splice(int, 1);
+                        window.dispatchEvent(new CustomEvent("_event_rebuild_element_", { detail: {element: element} }));
                         this.setState({
                             SelectedElement: this.state.SelectedElement
-                        });                  
+                        });
                     }}><Glyphicon glyph="minus" /></Button>
                 </InputGroup.Button>
             </InputGroup>
@@ -253,7 +256,7 @@ class App extends Component
         }
     }
     CreateVerticesContainer()
-    { 
+    {
         if (!this.state.Element_CodeCreate)
         {
             return (
@@ -287,42 +290,42 @@ class App extends Component
                 <InputGroup.Addon>index 01</InputGroup.Addon>
                 <FormControl type="number" value={element.Object.Indices[int].indices[0]} placeholder={""} onChange={(event) =>
                 {
-                    element.Object.Indices[int].indices[0] = event.target.value;  
-                    window.dispatchEvent(new CustomEvent("_event_rebuild_element_", { detail: {element: element} }));                      
+                    element.Object.Indices[int].indices[0] = event.target.value;
+                    window.dispatchEvent(new CustomEvent("_event_rebuild_element_", { detail: {element: element} }));
                     this.setState({
                         SelectedElement: this.state.SelectedElement
-                    });                       
+                    });
                 }} />
                 <InputGroup.Addon>index 02</InputGroup.Addon>
                 <FormControl type="number" value={element.Object.Indices[int].indices[1]} placeholder={""} onChange={(event) =>
                 {
-                    element.Object.Indices[int].indices[1] = event.target.value;  
-                    window.dispatchEvent(new CustomEvent("_event_rebuild_element_", { detail: {element: element} }));                      
+                    element.Object.Indices[int].indices[1] = event.target.value;
+                    window.dispatchEvent(new CustomEvent("_event_rebuild_element_", { detail: {element: element} }));
                     this.setState({
                         SelectedElement: this.state.SelectedElement
-                    });                       
+                    });
                 }} />
                 <InputGroup.Addon>index 03</InputGroup.Addon>
                 <FormControl type="number" value={element.Object.Indices[int].indices[2]} placeholder={""} onChange={(event) =>
                 {
-                    element.Object.Indices[int].indices[2] = event.target.value;  
-                    window.dispatchEvent(new CustomEvent("_event_rebuild_element_", { detail: {element: element} }));                      
+                    element.Object.Indices[int].indices[2] = event.target.value;
+                    window.dispatchEvent(new CustomEvent("_event_rebuild_element_", { detail: {element: element} }));
                     this.setState({
                         SelectedElement: this.state.SelectedElement
-                    });                       
+                    });
                 }} />
                 <InputGroup.Button>
                     <Button href="#" bsStyle="danger" onClick={(event) =>
                     {
-                        element.Object.Indices.splice(int, 1);  
-                        window.dispatchEvent(new CustomEvent("_event_rebuild_element_", { detail: {element: element} }));                      
+                        element.Object.Indices.splice(int, 1);
+                        window.dispatchEvent(new CustomEvent("_event_rebuild_element_", { detail: {element: element} }));
                         this.setState({
                             SelectedElement: this.state.SelectedElement
-                        });   
+                        });
                     }}><Glyphicon glyph="minus" /></Button>
                 </InputGroup.Button>
             </InputGroup>
-        )        
+        )
     }
     CreateIndices()
     {
@@ -346,7 +349,7 @@ class App extends Component
         }
     }
     CreateIndicesContainer()
-    {        
+    {
         if (!this.state.Element_CodeCreate)
         {
             return (
@@ -356,7 +359,7 @@ class App extends Component
                         <ButtonGroup>
                             <Button href="#" bsStyle="success" onClick={this._event_modal_onElementAddIndex}><Glyphicon glyph="plus" /></Button>
                         </ButtonGroup>
-                    </div >
+                    </div>
                 </div>
             );
         }
@@ -370,8 +373,37 @@ class App extends Component
                         Element_Index_Code: event.target.value
                     });
                 }} />
-            );    
+            );
         }
+    }
+    CreateFloor(i)
+    {
+        return (
+            <InputGroup style={{ paddingBottom: 10 }}>
+                <InputGroup.Addon>Name</InputGroup.Addon>
+                <FormControl type="text" value={this.state.floors[i][0]} placeholder={"name"} onChange={(event) => { this.state.floors[i][0] = event.target.value; this.setState({ floors: this.state.floors }); }} />
+                <InputGroup.Addon>Min Z</InputGroup.Addon>
+                <FormControl type="text" value={this.state.floors[i][1]} placeholder={"minimum z"} onChange={(event) => { this.state.floors[i][1] = event.target.value; this.setState({ floors: this.state.floors }); }} />
+                <InputGroup.Addon>Max Z</InputGroup.Addon>
+                <FormControl type="text" value={this.state.floors[i][2]} placeholder={"maximum z"} onChange={(event) => { this.state.floors[i][2] = event.target.value; this.setState({ floors: this.state.floors }); }} />
+                <InputGroup.Button>
+                    <Button href="#" bsStyle="danger" onClick={() => { if (i != 0) { this.state.floors.splice(i, 1); } this.setState({ floors: this.state.floors }); }}><Glyphicon glyph="minus" /></Button>
+                </InputGroup.Button>
+            </InputGroup>
+        );
+    }
+    CreateFloors()
+    {
+        let itms = [];
+        for (let i = 0; i < this.state.floors.length; i++)
+        {
+            itms.push(this.CreateFloor(i));
+        }
+        return (
+            <div>
+                {itms}
+            </div>
+        );
     }
     NavigationCollapse()
     {
@@ -543,7 +575,8 @@ class App extends Component
     {
         this.setState({
             showFloor: true,
-            floor: event.detail.floor
+            floor: event.detail.floor,
+            floors: event.detail.floors
         });
     }
     _event_modal_onNameChanged(event)
@@ -653,14 +686,14 @@ class App extends Component
         });
     }
     _event_modal_onElementAddVertex(event)
-    {        
+    {
         window.dispatchEvent(new CustomEvent("_event_element_addvertex_", { detail: { element: this.state.SelectedElement } }));
         this.setState({
             SelectedElement: this.state.SelectedElement
         });
     }
     _event_modal_onElementAddIndex(event)
-    {  
+    {
         window.dispatchEvent(new CustomEvent("_event_element_addindex_", { detail: { element: this.state.SelectedElement } }));
         this.setState({
             SelectedElement: this.state.SelectedElement
@@ -704,19 +737,19 @@ class App extends Component
                     Element_CodeCreate: true,
                     Element_Vertex_Code: vCode,
                     Element_Index_Code: iCode
-                });                
+                });
             }
         }
         if (!wf)
         {
-            this.state.SelectedElement.Object.RenderMode = "Solid";            
+            this.state.SelectedElement.Object.RenderMode = "Solid";
         }
         if (!cm)
         {
             this.setState({
                 Element_CodeCreate: false,
             });
-        }   
+        }
     }
     _event_modal_onDeleteElement(event)
     {
@@ -733,7 +766,7 @@ class App extends Component
         window.dispatchEvent(new CustomEvent("_event_modal_bindtonode_", { detail: { element: this.state.SelectedElement} }));
         this.setState({
             Element_Properties: false
-        });        
+        });
     }
     updateSize()
     {
@@ -926,14 +959,14 @@ class App extends Component
                                     Rotation
                                 </Col>
                                 <Col sm={10}>
-                                <InputGroup>
-                                    <InputGroup.Addon>x</InputGroup.Addon>
-                                    <FormControl type="text" value={(() => { if (this.state.cam) { return this.state.cam.Rotation.X; } else { return ""; } })()} placeholder={node_id_old} onChange={(event) => { try { this.state.cam.Rotation.X = event.target.value; } catch (e) { } this.setState({ cam: this.state.cam }); }} />
-                                    <InputGroup.Addon>y</InputGroup.Addon>
-                                    <FormControl type="text" value={(() => { if (this.state.cam) { return this.state.cam.Rotation.Y; } else { return ""; } })()} placeholder={node_name_old} onChange={(event) => { try { this.state.cam.Rotation.Y = event.target.value; } catch (e) { } this.setState({ cam: this.state.cam }); }} />
-                                    <InputGroup.Addon>z</InputGroup.Addon>
-                                    <FormControl type="text" value={(() => { if (this.state.cam) { return this.state.cam.Rotation.Z; } else { return ""; } })()} placeholder={node_name_old} onChange={(event) => { try { this.state.cam.Rotation.Z = event.target.value; } catch (e) { } this.setState({ cam: this.state.cam }); }} />
-                                </InputGroup>
+                                    <InputGroup>
+                                        <InputGroup.Addon>x</InputGroup.Addon>
+                                        <FormControl type="text" value={(() => { if (this.state.cam) { return this.state.cam.Rotation.X; } else { return ""; } })()} placeholder={node_id_old} onChange={(event) => { try { this.state.cam.Rotation.X = event.target.value; } catch (e) { } this.setState({ cam: this.state.cam }); }} />
+                                        <InputGroup.Addon>y</InputGroup.Addon>
+                                        <FormControl type="text" value={(() => { if (this.state.cam) { return this.state.cam.Rotation.Y; } else { return ""; } })()} placeholder={node_name_old} onChange={(event) => { try { this.state.cam.Rotation.Y = event.target.value; } catch (e) { } this.setState({ cam: this.state.cam }); }} />
+                                        <InputGroup.Addon>z</InputGroup.Addon>
+                                        <FormControl type="text" value={(() => { if (this.state.cam) { return this.state.cam.Rotation.Z; } else { return ""; } })()} placeholder={node_name_old} onChange={(event) => { try { this.state.cam.Rotation.Z = event.target.value; } catch (e) { } this.setState({ cam: this.state.cam }); }} />
+                                    </InputGroup>
                                 </Col>
                             </FormGroup>
                             <FormGroup style={{ marginTop: 10, height: 1, backgroundColor: "rgba(150, 150, 150, 0.50)" }}></FormGroup>
@@ -942,9 +975,9 @@ class App extends Component
                                     <Button bsStyle="success" href="#" onClick={() => { this.state.cam.Location.X = parseFloat(this.state.cam.Location.X); this.state.cam.Location.Y = parseFloat(this.state.cam.Location.Y); this.state.cam.Location.Z = parseFloat(this.state.cam.Location.Z); this.state.cam.Rotation.X = parseFloat(this.state.cam.Rotation.X); this.state.cam.Rotation.Y = parseFloat(this.state.cam.Rotation.Y); this.state.cam.Rotation.Z = parseFloat(this.state.cam.Rotation.Z); this.setState({ showCamera: false }); }}>Ok</Button>
                                 </ButtonGroup>
                             </FormGroup>
-                        </Form>    
+                        </Form>
                     </Modal.Body>
-                </Modal>                
+                </Modal>
                 <Modal show={this.state.showFloor} onHide={() => { this.setState({ showFloor: false }); }}>
                     <Modal.Header>
                         <Modal.Title>Floors</Modal.Title>
@@ -956,7 +989,7 @@ class App extends Component
                                     Selected Floor
                                 </Col>
                                 <Col sm={10}>
-                                    TextBOx
+                                    <FormControl type="number" value={this.state.floor} placeholder={"floor number"} onChange={(event) => { this.setState({ floor: event.target.value }); window.dispatchEvent(new CustomEvent("_event_onSignalFloorChange", { detail: { floor: event.target.value } })); }} />
                                 </Col>
                             </FormGroup>
                             <FormGroup>
@@ -964,7 +997,12 @@ class App extends Component
                                     Floors
                                 </Col>
                                 <Col sm={10}>
-                                    Text
+                                    {this.CreateFloors()}
+                                    <div style={{ textAlign: "right" }}>
+                                        <ButtonGroup>
+                                            <Button bsStyle="success" href="#" onClick={() => { this.state.floors.push(["New Floor", -1, 1]); this.setState({ floors: this.state.floors }); }}><Glyphicon glyph="plus" /></Button>
+                                        </ButtonGroup>
+                                    </div>
                                 </Col>
                             </FormGroup>
                             <FormGroup style={{ marginTop: 10, height: 1, backgroundColor: "rgba(150, 150, 150, 0.50)" }}></FormGroup>
@@ -973,7 +1011,7 @@ class App extends Component
                                     <Button bsStyle="success" href="#" onClick={() => { this.setState({ showFloor: false }); }}>Ok</Button>
                                 </ButtonGroup>
                             </FormGroup>
-                        </Form>    
+                        </Form>
                     </Modal.Body>
                 </Modal>
                 <Modal show={this.state.ShowCodeInjection} onHide={() => { this.setState({ ShowCodeInjection: false }); }}>
@@ -987,7 +1025,7 @@ class App extends Component
                                     Code
                                 </Col>
                                 <Col sm={10}>
-                                    <FormControl style={{ resize: "vertical", height: 200, fontFamily: "monospace" }} componentClass="textarea" type="text" value={this.state.cinj} placeholder="inject code directly to the renderer here" onChange={(event) => { this.setState({ cinj: event.target.value }); window.dispatchEvent(new CustomEvent("_event_onInjectChange", { detail: { cinj: event.target.value } })); }} />    
+                                    <FormControl style={{ resize: "vertical", height: 200, fontFamily: "monospace" }} componentClass="textarea" type="text" value={this.state.cinj} placeholder="inject code directly to the renderer here" onChange={(event) => { this.setState({ cinj: event.target.value }); window.dispatchEvent(new CustomEvent("_event_onInjectChange", { detail: { cinj: event.target.value } })); }} />
                                 </Col>
                             </FormGroup>
                             <FormGroup style={{ marginTop: 10, height: 1, backgroundColor: "rgba(150, 150, 150, 0.50)" }}></FormGroup>
@@ -996,7 +1034,7 @@ class App extends Component
                                     <Button bsStyle="success" href="#" onClick={() => { this.setState({ ShowCodeInjection: false }); }}>Ok</Button>
                                 </ButtonGroup>
                             </FormGroup>
-                        </Form>    
+                        </Form>
                     </Modal.Body>
                 </Modal>
                 <Modal show={this.state.bulkcreate} onHide={() => { this.setState({ bulkcreate: false }); }}>
@@ -1021,7 +1059,7 @@ class App extends Component
                                     <Button bsStyle="success" href="#" onClick={() => { this.setState({ bulkcreate: false }); this._event_onNavigationSelect("_navigation_node_bulkcreate_post"); }}>Ok</Button>
                                 </ButtonGroup>
                             </FormGroup>
-                        </Form>    
+                        </Form>
                     </Modal.Body>
                 </Modal>
                 <Modal show={this.state.showurl} onHide={() => { this.setState({ showurl: false }); }}>
@@ -1037,7 +1075,7 @@ class App extends Component
                                     <Button bsStyle="success" href="#" onClick={() => { this.setState({ showurl: false }); }}>Ok</Button>
                                 </ButtonGroup>
                             </FormGroup>
-                        </Form>    
+                        </Form>
                     </Modal.Body>
                 </Modal>
                 <Modal show={this.state.about} onHide={() => { this.setState({ about: false }); }}>
@@ -1056,7 +1094,7 @@ class App extends Component
                                     <li>3D Object Binding</li>
                                 </ul>
                                 <p style={{ textAlign: "left" }}>Developed by Shivan Modha, <i>Vanish Studios</i></p>
-                            </div>                            
+                            </div>
                             <FormGroup style={{ marginTop: 10, height: 1, backgroundColor: "rgba(150, 150, 150, 0.50)" }}></FormGroup>
                             <FormGroup style={{ textAlign: "right", marginRight: 0 }}>
                                 <ButtonGroup>
@@ -1115,7 +1153,7 @@ class App extends Component
                                     <Button bsStyle="success" href="#" onClick={() => { this.setState({ Welcome: false }); }}>Blank Template</Button>
                                 </ButtonGroup>
                             </FormGroup>
-                        </Form>    
+                        </Form>
                     </Modal.Body>
                 </Modal>
                 <Modal bsSize="large" show={this.state.Element_Properties} onHide={this._event_modal_onOk}>
@@ -1171,7 +1209,7 @@ class App extends Component
                                         </ToggleButtonGroup>
                                     </div>
                                 </Col>
-                            </FormGroup>    
+                            </FormGroup>
                             <FormGroup>
                                 <Col sm={2} style={{ textAlign: "right", paddingTop: 5 }}>
                                     Vertices
@@ -1185,7 +1223,7 @@ class App extends Component
                                     Faces
                                 </Col>
                                 <Col sm={10}>
-                                    {this.CreateIndicesContainer()}    
+                                    {this.CreateIndicesContainer()}
                                 </Col>
                             </FormGroup>
                             <FormGroup style={{ height: 1, backgroundColor: "rgba(150, 150, 150, 0.50)" }}></FormGroup>
@@ -1203,7 +1241,7 @@ class App extends Component
                         <Modal.Title>Node Properties</Modal.Title>
                     </Modal.Header>
                     <Modal.Body>
-                        <Form horizontal>                            
+                        <Form horizontal>
                             <FormGroup>
                                 <Col sm={2} style={{ textAlign: "right", paddingTop: 5 }}>
                                     Node
