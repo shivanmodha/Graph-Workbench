@@ -1086,11 +1086,15 @@ class App extends Component
                         <Form horizontal>
                             <div style={{ color: "#66afe9", paddingTop: 0, marginTop: 0 }}>
                                 <h3 style={{ paddingTop: 0, marginTop: 0 }}>Release Notes</h3>
-                                <p>Version: 1.0.3</p>
+                                <p>Version: 1.0.4</p>
                                 <h4>New Features</h4>
                                 <ul>
                                     <li>Graph Floor Implementation</li>
                                     <li>Camera Control</li>
+                                </ul>
+                                <h4>Bug Fixes</h4>
+                                <ul>
+                                    <li>Unclickable Node Elements</li>
                                 </ul>
                                 <p style={{ textAlign: "left" }}>Developed by Shivan Modha, <i>Vanish Studios</i></p>
                             </div>

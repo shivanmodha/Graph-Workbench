@@ -148,8 +148,8 @@ function Initialize()
     {
         graph.FromJson(ME, JSON.parse(json));
     }    
-    cursor_default.src = url + "component/cursor/default.png";
-    cursor_move.src = url + "component/cursor/move.png";
+    cursor_default.src = "/bench/component/cursor/default.png";
+    cursor_move.src = "/bench/component/cursor/move.png";
 }
 function _event_onKeyPress(event)
 {
@@ -400,6 +400,14 @@ function _event_onNavigationSelect(event)
     {
         window.dispatchEvent(new CustomEvent("_event_onSignalFloors", { detail: { floor: RenderedFloor, floors: graph.Floors } }));
     }
+    else if (navigation === "_navigation_view_floordown")
+    {
+        _event_onSignalFloorChange({ detail: { floor: RenderedFloor - 1 } });
+    }
+    else if (navigation === "_navigation_view_floorup")
+    {
+        _event_onSignalFloorChange({ detail: { floor: RenderedFloor + 1 } });
+    }
 }
 function _event_onMouseDown(event)
 {
@@ -447,7 +455,7 @@ function _event_onMouseMove(event)
     for (let i = 0; i < graph.Nodes.length; i++)
     {
         let child = graph.Nodes[i];
-        if (child.ProjectedLocation.DistanceTo(new Vertex(MousePosition.X, MousePosition.Y, 0)) < 10)
+        if (graph.DistanceToNode(i, new Vertex(MousePosition.X, MousePosition.Y, 0)) < 10)
         {
             graph.Nodes[i].Hovered = true;
         }
@@ -581,7 +589,6 @@ function _event_onInjectChange(event)
 }
 function _event_onSignalFloorChange(event)
 {
-    console.log(event.detail.floor);
     RenderedFloor = parseFloat(event.detail.floor);
     graph.RenderedFloor = parseFloat(event.detail.floor);
     UpdateURL();

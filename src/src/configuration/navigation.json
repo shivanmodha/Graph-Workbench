@@ -24,8 +24,18 @@
                 "Zoom Out": "_navigation_view_zoomout",
                 "div1": "divider",
                 "Camera": "_navigation_view_camera",
-                "Reset Camera": "_navigation_view_resetcamera",
-                "div2": "divider",
+                "Reset Camera": "_navigation_view_resetcamera"
+            }
+        },
+        "Floors": {
+            "type": "dropdown",
+            "side": "left",
+            "eventKey": "_navigation_floor",
+            "id": "nav-view-dropdown",
+            "children": {
+                "Floor Down": "_navigation_view_floordown",
+                "Floor Up": "_navigation_view_floorup",
+                "div1": "divider",
                 "Floors": "_navigation_view_floors"
             }
         },
