@@ -44,6 +44,58 @@ let Graph = class Graph
         }
         return false;
     }
+    GetDynamicDirections()
+    {
+        let _return = [];
+        for (let i = 1; i < this.SelectedPath.length - 1; i++)
+        {
+            let parent = this.SelectedPath[i - 1];
+            let current = this.SelectedPath[i];
+            let child = this.SelectedPath[i + 1];
+            let vector1 = new Vertex(current.Location.X - parent.Location.X, current.Location.Y - parent.Location.Y, current.Location.Z - parent.Location.Z);
+            let vector2 = new Vertex(child.Location.X - current.Location.X, child.Location.Y - current.Location.Y, child.Location.Z - current.Location.Z);
+            //let dot = (vector1.X * vector2.X) + (vector1.Y * vector2.Y) + (vector1.Z * vector2.Z);
+            let magV1 = Math.sqrt(Math.pow(vector1.X, 2) + Math.pow(vector1.Y, 2) + Math.pow(vector1.Z, 2));
+            let magV2 = Math.sqrt(Math.pow(vector2.X, 2) + Math.pow(vector2.Y, 2) + Math.pow(vector2.Z, 2));
+            // let ang = Math.acos((dot) / (magV1 * magV2));
+            // ang *= 180 / Math.PI;
+            // let ang = Math.atan2((vector1.X * vector2.Y) - (vector1.Y * vector2.X), (vector1.X * vector2.X) + (vector1.Y * vector2.Y));
+            // ang *= 180 / Math.PI;
+            let mag = (a) =>
+            {
+                return Math.sqrt(Math.pow(a.X, 2) + Math.pow(a.Y, 2) + Math.pow(a.Z, 2));
+            }
+            let norm = (a) =>
+            {
+                let magA = mag(a);
+                if (magA != 0)
+                {
+                    return new Vertex(a.X / magA, a.Y / magA, a.Z / magA);
+                }
+                else
+                {
+                    return new Vertex(0, 0, 0);
+                }
+            }
+            let cross = (a, b) =>
+            {
+                return new Vertex((a.Y * b.Z) - (a.Z * b.Y), (a.Z * b.X) - (a.X * b.Z), (a.X * b.Y) - (a.Y * b.X));
+            }
+            let dot = (a, b) =>
+            {
+                return (a.X * b.X) + (a.Y * b.Y) + (a.Z * b.Z);
+            }
+            console.log(norm(cross(vector1, vector2)));
+            let ang = Math.atan2(mag(cross(vector1, vector2)), dot(vector1, vector2));
+            ang *= 180 / Math.PI;
+            if (cross(vector1, vector2).Z > 0)
+            {
+                ang *= -1;
+            }
+            _return.push(current.Name + " {{" + ang + "}, {" + vector1.X + ", " + vector1.Y + ", " + vector1.Z + "}, {" + vector2.X + ", " + vector2.Y + ", " + vector2.Z + "}}");
+        }
+        return _return;
+    }
     GetPath(start, end)
     {
         let nodePool = [];

@@ -33,6 +33,7 @@ let c = 0;
 let cinj = "";
 
 let RenderedFloor = 1;
+let stats = [];
 
 function Main()
 {
@@ -340,6 +341,7 @@ function _event_onNavigationSelect(event)
         if (start && end)
         {
             graph.GetPath(start, end);
+            stats = graph.GetDynamicDirections();
         }
     }
     else if (navigation === "_navigation_file_new")
@@ -649,5 +651,10 @@ function Render()
     catch (e)
     {
         
+    }
+    ME.Device2D.textAlign = "left";
+    for (let i = 0; i < stats.length; i++)
+    {
+        ME.Device2D.fillText(stats[i], 0, (i + 1) * 12);
     }
 }    
