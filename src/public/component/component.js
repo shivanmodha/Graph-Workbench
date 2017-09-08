@@ -33,7 +33,7 @@ let c = 0;
 let cinj = "";
 
 let RenderedFloor = 1;
-let stats = [];
+let directions = [];
 
 function Main()
 {
@@ -341,7 +341,7 @@ function _event_onNavigationSelect(event)
         if (start && end)
         {
             graph.GetPath(start, end);
-            stats = graph.GetDynamicDirections();
+            directions = graph.GetDynamicDirections();
         }
     }
     else if (navigation === "_navigation_file_new")
@@ -653,8 +653,8 @@ function Render()
         
     }
     ME.Device2D.textAlign = "left";
-    for (let i = 0; i < stats.length; i++)
+    for (let i = 0; i < directions.length; i++)
     {
-        ME.Device2D.fillText(stats[i], 0, (i + 1) * 12);
+        ME.Device2D.fillText(directions[i].Instruction, 0, (i + 1) * 12);
     }
 }    

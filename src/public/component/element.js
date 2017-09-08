@@ -47,52 +47,80 @@ let Graph = class Graph
     GetDynamicDirections()
     {
         let _return = [];
+        let DestCall = false;
+        let mag = (a) =>
+        {
+            return Math.sqrt(Math.pow(a.X, 2) + Math.pow(a.Y, 2) + Math.pow(a.Z, 2));
+        }
+        let dist = (a, b) =>
+        {
+            return Math.sqrt(Math.pow(a.X - b.X, 2) + Math.pow(a.Y - b.Y, 2) + Math.pow(a.Z - b.Z, 2));
+        }
+        let cross = (a, b) =>
+        {
+            return new Vertex((a.Y * b.Z) - (a.Z * b.Y), (a.Z * b.X) - (a.X * b.Z), (a.X * b.Y) - (a.Y * b.X));
+        }
+        let dot = (a, b) =>
+        {
+            return (a.X * b.X) + (a.Y * b.Y) + (a.Z * b.Z);
+        }
+        _return.push(new DirectionInstruction(this.SelectedPath[1].Name, "Start", dist(this.SelectedPath[0].Location, this.SelectedPath[1].Location), "Head to " + this.SelectedPath[1].Name));
         for (let i = 1; i < this.SelectedPath.length - 1; i++)
         {
             let parent = this.SelectedPath[i - 1];
             let current = this.SelectedPath[i];
             let child = this.SelectedPath[i + 1];
-            let vector1 = new Vertex(current.Location.X - parent.Location.X, current.Location.Y - parent.Location.Y, current.Location.Z - parent.Location.Z);
-            let vector2 = new Vertex(child.Location.X - current.Location.X, child.Location.Y - current.Location.Y, child.Location.Z - current.Location.Z);
-            //let dot = (vector1.X * vector2.X) + (vector1.Y * vector2.Y) + (vector1.Z * vector2.Z);
-            let magV1 = Math.sqrt(Math.pow(vector1.X, 2) + Math.pow(vector1.Y, 2) + Math.pow(vector1.Z, 2));
-            let magV2 = Math.sqrt(Math.pow(vector2.X, 2) + Math.pow(vector2.Y, 2) + Math.pow(vector2.Z, 2));
-            // let ang = Math.acos((dot) / (magV1 * magV2));
-            // ang *= 180 / Math.PI;
-            // let ang = Math.atan2((vector1.X * vector2.Y) - (vector1.Y * vector2.X), (vector1.X * vector2.X) + (vector1.Y * vector2.Y));
-            // ang *= 180 / Math.PI;
-            let mag = (a) =>
-            {
-                return Math.sqrt(Math.pow(a.X, 2) + Math.pow(a.Y, 2) + Math.pow(a.Z, 2));
-            }
-            let norm = (a) =>
-            {
-                let magA = mag(a);
-                if (magA != 0)
-                {
-                    return new Vertex(a.X / magA, a.Y / magA, a.Z / magA);
-                }
-                else
-                {
-                    return new Vertex(0, 0, 0);
-                }
-            }
-            let cross = (a, b) =>
-            {
-                return new Vertex((a.Y * b.Z) - (a.Z * b.Y), (a.Z * b.X) - (a.X * b.Z), (a.X * b.Y) - (a.Y * b.X));
-            }
-            let dot = (a, b) =>
-            {
-                return (a.X * b.X) + (a.Y * b.Y) + (a.Z * b.Z);
-            }
-            console.log(norm(cross(vector1, vector2)));
+            let vector1 = new Vertex(current.Location.X - parent.Location.X, current.Location.Y - parent.Location.Y, 0);
+            let vector2 = new Vertex(child.Location.X - current.Location.X, child.Location.Y - current.Location.Y, 0);
             let ang = Math.atan2(mag(cross(vector1, vector2)), dot(vector1, vector2));
             ang *= 180 / Math.PI;
+            let StraightOffset = 15;
             if (cross(vector1, vector2).Z > 0)
             {
                 ang *= -1;
             }
-            _return.push(current.Name + " {{" + ang + "}, {" + vector1.X + ", " + vector1.Y + ", " + vector1.Z + "}, {" + vector2.X + ", " + vector2.Y + ", " + vector2.Z + "}}");
+            if (current.Location.Z === child.Location.Z)
+            {
+                if ((ang > -StraightOffset) && (ang < StraightOffset))
+                {
+                    if (_return[_return.length - 1].NodeName === child.Name && _return[_return.length - 1].Direction != "Straight")
+                    {
+                        _return.push(new DirectionInstruction(child.Name, "Straight", dist(current.Location, child.Location), "Keep Straight"));                        
+                    }
+                    else
+                    {
+                        if (i !== this.SelectedPath.length - 2)
+                        {
+                            _return.push(new DirectionInstruction(child.Name, "Straight", dist(current.Location, child.Location), "Straight to " + child.Name));
+                        }
+                        else
+                        {
+                            DestCall = true;
+                            _return.push(new DirectionInstruction(child.Name, "Straight", dist(current.Location, child.Location), "Destination Straight Ahead"));
+                        }
+                    }    
+                }
+                else if (ang < -StraightOffset)
+                {
+                    _return.push(new DirectionInstruction(child.Name, "Left", dist(current.Location, child.Location), "Left to " + child.Name));
+                }
+                else if (ang > StraightOffset)
+                {
+                    _return.push(new DirectionInstruction(child.Name, "Right", dist(current.Location, child.Location), "Right to " + child.Name));
+                }
+            }
+            else if (current.Location.Z < child.Location.Z)
+            {
+                _return.push(new DirectionInstruction(child.Name, "Up", dist(current.Location, child.Location), "Up to " + child.Name));
+            }
+            else if (current.Location.Z > child.Location.Z)
+            {
+                _return.push(new DirectionInstruction(child.Name, "Down", dist(current.Location, child.Location), "Down to " + child.Name));
+            }
+        }
+        if (!DestCall)
+        {
+            _return.push(new DirectionInstruction(this.SelectedPath[this.SelectedPath.length - 1].Name, "Destination", 0, "Destination"));
         }
         return _return;
     }
@@ -172,7 +200,7 @@ let Graph = class Graph
             if (this.Nodes[i].ProjectedLocation)
             {
                 return this.Nodes[i].ProjectedLocation.DistanceTo(point);
-            }    
+            }
             else
             {
                 return Number.MAX_SAFE_INTEGER;
@@ -192,8 +220,8 @@ let Graph = class Graph
                 if (this.Elements[i].Node != null && this.NodeInFloor(this.Elements[i].Node))
                 {
                     this.Elements[i].Render(ME);
-                }    
-            }    
+                }
+            }
         }
         for (let i = 0; i < this.Nodes.length; i++)
         {
@@ -224,7 +252,7 @@ let Graph = class Graph
                     ME.Device2D.stroke();
                     ME.Device2D.strokeStyle = '#000000';
                 }
-            }    
+            }
         }
         for (let i = 0; i < this.Nodes.length; i++)
         {
@@ -288,7 +316,7 @@ let Graph = class Graph
                 ME.Device2D.fillText("'" + this.Nodes[i].Name + "' = (" + x + ", " + y + ", " + z + ")", p.X, p.Y + 20);
                 ME.Device2D.fillStyle = '#000000';
                 ME.Device2D.strokeStyle = '#000000';
-            }    
+            }
         }
     }
     ToJson()
@@ -302,7 +330,7 @@ let Graph = class Graph
         {
             let child = {
                 "name": this.Nodes[i].Name,
-                "id": this.Nodes[i].ID,                
+                "id": this.Nodes[i].ID,
                 "location": {
                     "x": this.Nodes[i].Location.X,
                     "y": this.Nodes[i].Location.Y,
@@ -316,7 +344,7 @@ let Graph = class Graph
                 child["neighbors"].push({
                     "distance": this.Nodes[i].Neighbors[j].Distance,
                     "end": this.Nodes[i].Neighbors[j].EndNode.ID,
-                });              
+                });
             }
             js["nodes"].push(child);
         }
@@ -344,7 +372,7 @@ let Graph = class Graph
                     this.Elements[i].Object.Vertices[j].R,
                     this.Elements[i].Object.Vertices[j].G,
                     this.Elements[i].Object.Vertices[j].B,
-                    this.Elements[i].Object.Vertices[j].A,                 
+                    this.Elements[i].Object.Vertices[j].A,
                 ]);
             }
             for (let j = 0; j < this.Elements[i].Object.Indices.length; j++)
@@ -391,7 +419,7 @@ let Graph = class Graph
             {
                 let c = js["elements"][i]["vertices"][j];
                 v.push(new GraphicsVertex(c[0], c[1], c[2], c[3], c[4], c[5], c[6]));
-            }    
+            }
             let ind = [];
             for (let j = 0; j < js["elements"][i]["indices"].length; j++)
             {
@@ -407,10 +435,20 @@ let Graph = class Graph
                     {
                         n.BindToNode(this.Nodes[k]);
                     }
-                }                    
+                }
             }
             this.Elements.push(n);
         }
+    }
+}
+let DirectionInstruction = class DirectionInstruction
+{
+    constructor(nodeName, direction, distance, instruction)
+    {
+        this.NodeName = nodeName;
+        this.Distance = distance;
+        this.Direction = direction;
+        this.Instruction = instruction;
     }
 }
 let nID = 0;
