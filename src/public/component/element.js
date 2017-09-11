@@ -64,12 +64,22 @@ let Graph = class Graph
         {
             return (a.X * b.X) + (a.Y * b.Y) + (a.Z * b.Z);
         }
-        _return.push(new DirectionInstruction(this.SelectedPath[1].Name, "Start", dist(this.SelectedPath[0].Location, this.SelectedPath[1].Location), "Head to " + this.SelectedPath[1].Name));
+        let start = false;
+        if (!this.SelectedPath[1].Name.includes(this.SelectedPath[0].Name))
+        {
+            start = true;
+            _return.push(new DirectionInstruction(this.SelectedPath[1].Name, "Start", dist(this.SelectedPath[0].Location, this.SelectedPath[1].Location), "Head to " + this.SelectedPath[1].Name));
+        }
         for (let i = 1; i < this.SelectedPath.length - 1; i++)
         {
+            let verb = "to";
             let parent = this.SelectedPath[i - 1];
             let current = this.SelectedPath[i];
             let child = this.SelectedPath[i + 1];
+            if (child.Name.includes("Hall"))
+            {
+                verb = "on";
+            }
             let vector1 = new Vertex(current.Location.X - parent.Location.X, current.Location.Y - parent.Location.Y, 0);
             let vector2 = new Vertex(child.Location.X - current.Location.X, child.Location.Y - current.Location.Y, 0);
             let ang = Math.atan2(mag(cross(vector1, vector2)), dot(vector1, vector2));
@@ -79,44 +89,64 @@ let Graph = class Graph
             {
                 ang *= -1;
             }
-            if (current.Location.Z === child.Location.Z)
+            if (!start && i === 1)
             {
-                if ((ang > -StraightOffset) && (ang < StraightOffset))
+                _return.push(new DirectionInstruction(child.Name, "Start", dist(current.Location, child.Location), "Head to " + child.Name));
+            }
+            else
+            {
+                let displayName = child.Name;
+                if (displayName.includes(" Entrance"))
                 {
-                    if (_return[_return.length - 1].NodeName === child.Name && _return[_return.length - 1].Direction != "Straight")
+                    displayName = displayName.replace(" Entrance", "");
+                }
+                if (current.Location.Z === child.Location.Z)
+                {
+                    if ((ang > -StraightOffset) && (ang < StraightOffset))
                     {
-                        _return.push(new DirectionInstruction(child.Name, "Straight", dist(current.Location, child.Location), "Keep Straight"));                        
-                    }
-                    else
-                    {
-                        if (i !== this.SelectedPath.length - 2)
+                        console.log(_return[_return.length - 1].NodeName + " | " + child.Name);
+                        if (_return[_return.length - 1].NodeName === child.Name && _return[_return.length - 1].Direction != "Straight")
                         {
-                            _return.push(new DirectionInstruction(child.Name, "Straight", dist(current.Location, child.Location), "Straight to " + child.Name));
+                            _return.push(new DirectionInstruction(child.Name, "Straight", dist(current.Location, child.Location), "Keep Straight"));
                         }
                         else
                         {
-                            DestCall = true;
-                            _return.push(new DirectionInstruction(child.Name, "Straight", dist(current.Location, child.Location), "Destination Straight Ahead"));
+                            if (i !== this.SelectedPath.length - 2)
+                            {
+                                console.log(_return[_return.length - 1].NodeName + " | " + child.Name);
+                                if (_return[_return.length - 1].NodeName !== child.Name)
+                                {
+                                    _return.push(new DirectionInstruction(child.Name, "Straight", dist(current.Location, child.Location), "Straight to " + displayName));
+                                }
+                            }    
+                            else
+                            {
+                                DestCall = true;
+                                _return.push(new DirectionInstruction(child.Name, "Straight", dist(current.Location, child.Location), "Destination Straight Ahead"));
+                            }
                         }
+                    }
+                    else if (ang < -StraightOffset)
+                    {                       
+                        _return.push(new DirectionInstruction(child.Name, "Left", dist(current.Location, child.Location), "Left " + verb + " " + displayName));
                     }    
+                    else if (ang > StraightOffset)
+                    {
+                        _return.push(new DirectionInstruction(child.Name, "Right", dist(current.Location, child.Location), "Right " + verb + " " + displayName));
+                    }
                 }
-                else if (ang < -StraightOffset)
+                else if (current.Location.Z < child.Location.Z)
                 {
-                    _return.push(new DirectionInstruction(child.Name, "Left", dist(current.Location, child.Location), "Left to " + child.Name));
-                }
-                else if (ang > StraightOffset)
+                    if (!_return[_return.length - 1].NodeName.includes(child.Name) || child.Name.includes("Stairs"))
+                    {
+                        _return.push(new DirectionInstruction(child.Name, "Up", dist(current.Location, child.Location), "Up " + displayName));
+                    }
+                }    
+                else if (current.Location.Z > child.Location.Z)
                 {
-                    _return.push(new DirectionInstruction(child.Name, "Right", dist(current.Location, child.Location), "Right to " + child.Name));
+                    _return.push(new DirectionInstruction(child.Name, "Down", dist(current.Location, child.Location), "Down " + displayName));
                 }
-            }
-            else if (current.Location.Z < child.Location.Z)
-            {
-                _return.push(new DirectionInstruction(child.Name, "Up", dist(current.Location, child.Location), "Up to " + child.Name));
-            }
-            else if (current.Location.Z > child.Location.Z)
-            {
-                _return.push(new DirectionInstruction(child.Name, "Down", dist(current.Location, child.Location), "Down to " + child.Name));
-            }
+            }    
         }
         if (!DestCall)
         {
